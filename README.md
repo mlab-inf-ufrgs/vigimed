@@ -6,6 +6,7 @@ The VigiMed datasets are updated once a week and avaible in csv format.
 - `VigiMed_Medicamentos.csv`
 - `VigiMed_Reacoes.csv`
 
+[ERD](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#G1z0v-POQDdwkInzBVEe6cLE4_uBEn7GZD#%7B%22pageId%22%3A%221UQrTR_ZhEASL8xhWuEK%22%7D)
  
 # 🌳  Project Folder Overview
 
