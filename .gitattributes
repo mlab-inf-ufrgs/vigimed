@@ -1,0 +1,4 @@
+*.pbix filter=lfs diff=lfs merge=lfs -text
+README.md !text !filter !merge !diff
+*.gitignore !text !filter !merge !diff
+*.yml !text !filter !merge !diff
