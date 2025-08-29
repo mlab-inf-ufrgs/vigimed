@@ -1,3 +1,6 @@
+data/01_bronze/reacoes/*.csv filter=lfs diff=lfs merge=lfs -text
+data/01_bronze/medicamentos/*.csv filter=lfs diff=lfs merge=lfs -text
+data/01_bronze/notificacoes/*.csv filter=lfs diff=lfs merge=lfs -text
 *.pbix filter=lfs diff=lfs merge=lfs -text
 README.md !text !filter !merge !diff
 *.gitignore !text !filter !merge !diff
