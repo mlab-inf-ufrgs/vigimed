@@ -31,6 +31,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/medicacoes data/notificacoes data/reacoes || echo "No data changes"
+          git add data/01_bronze/medicacoes data/01_bronze/notificacoes data/01_bronze/reacoes || echo "No data changes"
           git commit -m "Daily run $(date -u +'%Y-%m-%d'): ELT Bronze" || echo "No changes to commit"
           git push
