@@ -5,6 +5,9 @@ on:
     - cron: "0 17 * * *"  # 14h de Brasília (17h UTC)
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run-notebook:
     runs-on: ubuntu-latest
