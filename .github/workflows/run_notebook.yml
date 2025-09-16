@@ -29,6 +29,8 @@ jobs:
           jupyter nbconvert --to notebook --execute --inplace tests/elt_bronze_incremental.ipynb
 
       - name: Commit and push data updates
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -36,4 +38,4 @@ jobs:
                  data/01_bronze/Notificacoes/Notificacoes.parquet \
                  data/01_bronze/Reacoes/Reacoes.parquet || echo "No data changes"
           git commit -m "Daily run $(date -u +'%Y-%m-%d'): ELT Bronze" || echo "No changes to commit"
-          git push
+          git push origin HEAD:${{ github.ref }}
