@@ -1,2 +1,2 @@
-data/01_bronze/*.parquet filter=lfs diff=lfs merge=lfs -text
-data/02_silver/*.parquet filter=lfs diff=lfs merge=lfs -text
+data/01_bronze/**/*.parquet filter=lfs diff=lfs merge=lfs -text
+data/02_silver/**/*.parquet filter=lfs diff=lfs merge=lfs -text
