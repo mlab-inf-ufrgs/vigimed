@@ -1,0 +1,6 @@
+pandas
+requests
+urllib3
+jupyter
+nbconvert
+pyarrow
