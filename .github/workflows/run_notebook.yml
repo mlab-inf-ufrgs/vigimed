@@ -44,8 +44,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          rm -rf data/01_bronze/* data/02_silver/*
-          git add -A
           git add data/01_bronze/**/*.parquet \
                  data/02_silver/**/*.parquet || echo "No data changes"
           git commit -m "Daily run $(date -u +'%d-%m-%Y'): ELT Bronze + Silver"
