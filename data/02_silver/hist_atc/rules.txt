@@ -1,0 +1,10 @@
+regras = [
+    {"atc": "L04AB", "principio": "adalimumab",         "pk": "L04AB04", "descricao": "ADALIMUMAB"},
+    {"atc": "L04AB", "principio": "certolizumab pegol", "pk": "L04AB05", "descricao": "CERTOLIZUMAB PEGOL"},
+    {"atc": "L04AB", "principio": "etanercept",         "pk": "L04AB01", "descricao": "ETANERCEPT"},
+    {"atc": "L04AB", "principio": "golimumab",          "pk": "L04AB06", "descricao": "GOLIMUMAB"},
+    {"atc": "L04AB", "principio": "infliximab",         "pk": "L04AB02", "descricao": "INFLIXIMAB"},
+    {"atc": "L04AA", "principio": "abatacept",          "pk": "L04AA24", "descricao": "ABATACEPT"},
+    {"atc": "L01FA", "principio": "rituximab",          "pk": "L01FA01", "descricao": "RITUXIMAB"},
+    {"atc": "L04AC", "principio": "tocilizumab",        "pk": "L04AC07", "descricao": "TOCILIZUMAB"}
+]
