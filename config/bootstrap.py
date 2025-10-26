@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c1307237a4dcd4057bd6505441c996889b92d69977ce07c383cffeb5b0b06266
-size 519
+import sys
+from pathlib import Path
+
+def add_src_to_sys_path(markers=(".project-root", "README.md", ".git")):
+    current = Path().resolve()
+    for parent in [current] + list(current.parents):
+        if any((parent / marker).exists() for marker in markers):
+            src_path = parent / "src"
+            if str(src_path) not in sys.path:
+                sys.path.insert(0, str(src_path))
+            return
+    raise FileNotFoundError("Could not find project root to add src to sys.path.")
+
+add_src_to_sys_path()
