@@ -17,25 +17,71 @@ def normalize_date_column(series):
     # Mantém apenas a parte da data (sem hora)
     series = series.dt.floor("d")  # arredonda para o dia
     return series
- 
-def mapping_column(df, col, mapa, nome_valor=None, tipo_int64=True):
+################################################################################################################
+## MEDICAMENTOS ################################################################################################
+################################################################################################################
+import pandas as pd
+
+def mapping_column(
+    df,
+    col,
+    mapa,
+    *,
+    nome_chave=None,
+    nome_valor=None,
+    tipo_int64=True,
+    fillna_valor=None,
+    fillna_chave=None,
+    drop_original=True,
+):
+    """
+    - Cria <col>_VALOR com o texto original.
+    - Cria <col>_CHAVE com o código (mapeado).
+    - Opcionalmente remove a coluna original <col>.
+    """
+
     if col not in df.columns:
         return df
 
-    nome_valor = nome_valor or f"{col}_VALOR"
+    # nomes padrão das colunas derivadas
+    nome_valor = nome_valor or f"{col}_VALOR"   # texto original
+    nome_chave = nome_chave or f"{col}_CHAVE"   # código
+
+    # 1) guardar o valor original (texto)
     df[nome_valor] = df[col]
 
-    # Substitui pelos códigos
-    df[col] = df[col].replace(mapa)
-    
+    # 2) aplicar o mapa para obter a CHAVE
+    s = df[col].replace(mapa)
+    # remove o FutureWarning de downcasting silencioso
+    s = s.infer_objects(copy=False)
+
+    # 3) converter para Int64 se desejado
     if tipo_int64:
-        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype("Int64")
+        s = pd.to_numeric(s, errors="coerce")
+
+    # 4) preencher NaN da chave, se solicitado
+    if fillna_chave is not None:
+        s = s.fillna(fillna_chave)
+
+    if tipo_int64:
+        s = s.astype("Int64")
+
+    df[nome_chave] = s
+
+    # 5) preencher NaN do valor (texto), se solicitado
+    if fillna_valor is not None:
+        df[nome_valor] = df[nome_valor].fillna(fillna_valor)
+
+    # 6) remover coluna original, se não for mais necessária
+    if drop_original:
+        df = df.drop(columns=[col])
 
     return df
 
 
-import pandas as pd
-
+################################################################################################################
+## REACOES ################################################################################################
+################################################################################################################
 def expandir_gravidade_wide(df, col='GRAVIDADE', prefix='GRAVIDADE_'):
     """
     Cria colunas dummies (0/1) para cada tipo de gravidade encontrado em uma coluna texto.
