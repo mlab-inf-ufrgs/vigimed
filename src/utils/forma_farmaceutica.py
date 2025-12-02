@@ -157,8 +157,8 @@ def normalizar_forma_farmaceutica_raw(txt: str, use_fuzzy: bool = True, threshol
 
 def criar_dim_forma_farmaceutica(df: pd.DataFrame,
                                  col_original: str = "FORMA_FARMACEUTICA",
-                                 col_norm: str = "FORMA_FARMACEUTICA_NORM",
-                                 pk_col: str = "PK_FORMA_FARMACEUTICA"):
+                                 col_norm: str = "FORMA_FARMACEUTICA_CHAVE",
+                                 pk_col: str = "FORMA_FARMACEUTICA_VALOR"):
     df = df.copy()
 
     df[col_norm] = df[col_original].apply(normalizar_forma_farmaceutica_raw)

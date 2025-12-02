@@ -5,3 +5,5 @@ from .normalize import normalize_rows, normalize_date_column #, mapping_column, 
 from .normalize_duration import normalize_duration
 from .forma_farmaceutica import _normalizar_basico, normalizar_forma_farmaceutica_raw, criar_dim_forma_farmaceutica
 from .mappings import mapping_column_from_df, apply_mappings, mapping_column
+from .via_adm import normalizar_via_administracao
+from .via_adm_fuzzy import normalizar_via_fuzzy
