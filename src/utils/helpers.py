@@ -35,3 +35,31 @@ pd.set_option('display.max_rows', None)
 # Ajustar largura de colunas para evitar corte
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.width', 0)  # permite que o notebook ajuste automaticamente
+
+import pandas as pd
+
+def add_key_value_columns(
+    df: pd.DataFrame,
+    base_col: str,
+    normalized_col: str,
+    prefix: str = None,
+) -> pd.DataFrame:
+    """
+    Cria colunas `<prefix>_CHAVE` e `<prefix>_VALOR` a partir de um campo
+    normalizado (ex.: DETENTOR_REGISTRO_PADRONIZADO).
+
+    - `_VALOR` recebe o próprio texto normalizado.
+    - `_CHAVE` é um código inteiro (1..N) por valor distinto, preservando a
+      ordem em que aparece.
+    """
+    prefix = prefix or base_col
+
+    valor_col = f"{prefix}_VALOR"
+    chave_col = f"{prefix}_CHAVE"
+
+    df = df.copy()
+    df[valor_col] = df[normalized_col]
+
+    keys, _ = pd.factorize(df[normalized_col], sort=True)
+    df[chave_col] = pd.Series(keys + 1, index=df.index).astype("Int64")  # começa em 1
+    return df
