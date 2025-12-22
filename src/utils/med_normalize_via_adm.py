@@ -12,6 +12,7 @@ from .med_normalize_via_adm_keyword_data import (
     BASE_UNKNOWN_TOKENS,
     CANONICAL_CODE_MAP,
     CANONICAL_DESCRIPTIONS,
+    CANONICAL_METADATA,
 )
 
 
@@ -95,6 +96,7 @@ def normalizar_via_fuzzy(
     score_threshold: int = 80,
     return_numeric: bool = False,
     return_description: bool = False,
+    return_description_pt: bool = False,
 ) -> str | int:
     """
     Normaliza via de administração usando fuzzy matching
@@ -103,18 +105,20 @@ def normalizar_via_fuzzy(
       Implant, Inhal, Instill, N, O, P, R, SL, TD, V
     ou 'desconhecido'. Quando `return_numeric=True`, retorna o
     identificador numérico correspondente (0 para desconhecido).
+    Quando `return_description=True`, retorna a descrição em inglês.
+    Quando `return_description_pt=True`, retorna a descrição em português.
     """
     if pd.isna(value):
-        return _return_result("desconhecido", return_numeric)
+        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
 
     s = _preprocess(value)
 
     manual_code = MANUAL_LOOKUP.get(s)
     if manual_code:
-        return _return_result(manual_code, return_numeric, return_description)
+        return _return_result(manual_code, return_numeric, return_description, return_description_pt)
 
     if not s or _is_unknown(s):
-        return _return_result("desconhecido", return_numeric, return_description)
+        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
 
     # 3) Fuzzy: compara a string s com todas as palavras canônicas
     best, score, idx = process.extractOne(
@@ -124,17 +128,20 @@ def normalizar_via_fuzzy(
     )
 
     if score < score_threshold:
-        return _return_result("desconhecido", return_numeric, return_description)
+        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
 
     # recupera o código associado à palavra canônica escolhida
-    return _return_result(CANDIDATE_CODES[idx], return_numeric, return_description)
+    return _return_result(CANDIDATE_CODES[idx], return_numeric, return_description, return_description_pt)
 
 
 def _is_unknown(text: str) -> bool:
     return any(unknown in text for unknown in UNKNOWN_TOKENS)
 
 
-def _return_result(label: str, return_numeric: bool, return_description: bool) -> str | int:
+def _return_result(label: str, return_numeric: bool, return_description: bool, return_description_pt: bool = False) -> str | int:
+    if return_description_pt:
+        metadata = CANONICAL_METADATA.get(label, CANONICAL_METADATA["desconhecido"])
+        return metadata.get("description_pt", metadata.get("description", label))
     if return_description:
         return CANONICAL_DESCRIPTIONS.get(label, CANONICAL_DESCRIPTIONS["desconhecido"])
     if return_numeric:

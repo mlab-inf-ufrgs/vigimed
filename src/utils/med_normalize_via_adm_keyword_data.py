@@ -1,16 +1,16 @@
 
 CANONICAL_METADATA = {
-    'desconhecido': {'code': 0, 'description': 'unknown'},
-    'Implant': {'code': 1, 'description': 'implant'},
-    'Inhal': {'code': 2, 'description': 'inhalation'},
-    'Instill': {'code': 3, 'description': 'instillation'},
-    'N': {'code': 4, 'description': 'nasal'},
-    'O': {'code': 5, 'description': 'oral'},
-    'P': {'code': 6, 'description': 'parenteral'},
-    'R': {'code': 7, 'description': 'rectal'},
-    'SL': {'code': 8, 'description': 'sublingual/buccal/oromucosal'},
-    'TD': {'code': 9, 'description': 'transdermal'},
-    'V': {'code': 10, 'description': 'vaginal'},
+    'desconhecido': {'code': 0, 'description': 'unknown', 'description_pt': 'Desconhecida'},
+    'Implant': {'code': 1, 'description': 'implant', 'description_pt': 'Implante'},
+    'Inhal': {'code': 2, 'description': 'inhalation', 'description_pt': 'Inalatória (pelas vias respiratórias)'},
+    'Instill': {'code': 3, 'description': 'instillation', 'description_pt': 'Ocular (nos olhos)'},
+    'N': {'code': 4, 'description': 'nasal', 'description_pt': 'Nasal'},
+    'O': {'code': 5, 'description': 'oral', 'description_pt': 'Oral'},
+    'P': {'code': 6, 'description': 'parenteral', 'description_pt': 'Parenteral (Injeção intramuscular, Injeção intravenosa, Injeção subcutânea)'},
+    'R': {'code': 7, 'description': 'rectal', 'description_pt': 'Retal (pelo ânus)'},
+    'SL': {'code': 8, 'description': 'sublingual/buccal/oromucosal', 'description_pt': 'Sublingual/Bucal/Oromucosal'},
+    'TD': {'code': 9, 'description': 'transdermal', 'description_pt': 'Dérmica (na pele)'},
+    'V': {'code': 10, 'description': 'vaginal', 'description_pt': 'Vaginal'},
 }
 
 CANONICAL_CODE_MAP = {k: v["code"] for k, v in CANONICAL_METADATA.items()}
