@@ -4,6 +4,7 @@ A estrutura ATC oficial possui apenas 5 níveis: 1, 3, 4, 5 e 7 (níveis 2 e 6 n
 """
 
 import pandas as pd
+import numpy as np
 import re
 from typing import Optional, Dict
 
@@ -119,8 +120,14 @@ def build_dim_atc(
     for col in levels_df.columns:
         dim_atc[col] = levels_df[col]
     
-    # Adicionar coluna ATC_LEVEL com o comprimento do código ATC
-    dim_atc['ATC_LEVEL'] = dim_atc[atc_code_col].astype(str).str.len()
+    # Adicionar coluna ATC_LEVEL mapeando comprimento do código ATC para nível lógico
+    # Mapeamento: 1 -> 1, 3 -> 2, 4 -> 3, 5 -> 4, 7 -> 5
+    code_length = dim_atc[atc_code_col].astype(str).str.len()
+    dim_atc['ATC_LEVEL'] = np.where(code_length == 1, 1,
+                          np.where(code_length == 3, 2,
+                          np.where(code_length == 4, 3,
+                          np.where(code_length == 5, 4,
+                          np.where(code_length == 7, 5, None)))))
     
     # Criar mapeamento de nomes para cada nível hierárquico
     # Para cada nível, criar um dicionário código -> nome
@@ -148,7 +155,12 @@ def build_dim_atc(
         for idx, row in dim_atc.iterrows():
             atc_code = str(row[atc_code_col]).strip().upper() if pd.notna(row[atc_code_col]) else ''
             level_code = row[level_col]
-            level_name = row[atc_name_col] if pd.notna(row[atc_name_col]) else None
+            # Forçar nomes de nível em caixa alta para padronização
+            level_name = (
+                str(row[atc_name_col]).upper()
+                if pd.notna(row[atc_name_col])
+                else None
+            )
             
             # Se o código ATC tem o tamanho exato do nível, esse é o nome do nível
             if len(atc_code) == expected_len and pd.notna(level_code) and level_name:
