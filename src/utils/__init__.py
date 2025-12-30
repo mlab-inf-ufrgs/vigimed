@@ -14,7 +14,7 @@ from .med_normalize_atc import normalize_atc
 from .med_atc_hierarchy import extract_atc_levels, build_dim_atc, expand_atc_hierarchy_from_codes
 from .med_problemas_relacionados_uso import expandir_lista_wide
 #from .med_normalize_detentor import fuzzy_merge_detentor
-from .elt_fuzzy_merge import fuzzy_merge
+from .elt_fuzzy_merge import fuzzy_merge, hungarian_text_link
 #from .med_normalize_via_adm import normalizar_via_administracao
 from .mappings import mapping_column_from_df, apply_mappings, mapping_column
 #from .via_adm import normalizar_via_administracao
