@@ -1,7 +1,7 @@
 # Definindo o caminho do projeto
 from pathlib import Path
 
-def get_project_root(markers=(".git", "README.md", "pyproject.toml")):
+def get_project_root(markers=(".git", "config", "pyproject.toml")):
     """
     Returns the root path of the project by looking for a marker file/directory.
 
@@ -17,10 +17,16 @@ def get_project_root(markers=(".git", "README.md", "pyproject.toml")):
     current = Path().resolve()
 
     for parent in [current] + list(current.parents):
-        if any((parent / marker).exists() for marker in markers):
+        # Verifica se o diretório tem 'config' E 'src' (estrutura do projeto)
+        has_config = (parent / "config").exists()
+        has_src = (parent / "src").exists()
+        if has_config and has_src:
+            return parent
+        # Fallback para .git ou pyproject.toml
+        if (parent / ".git").exists() or (parent / "pyproject.toml").exists():
             return parent
 
-    raise FileNotFoundError("Could not locate project root. Ensure a marker file like .git or README.md exists.")
+    raise FileNotFoundError("Could not locate project root. Ensure the project has config/ and src/ directories, or .git folder.")
 
 
 # Dataframe display settings

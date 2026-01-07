@@ -1,0 +1,378 @@
+\documentclass[12pt,a4paper]{article} % Definimos tamanho da letra e papel
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx} 
+\usepackage{xurl} % Para os links do GitHub não saírem da margem
+\usepackage[hidelinks]{hyperref} % Para links clicáveis
+\usepackage[margin=2.5cm]{geometry} % Ajusta as margens para padrão acadêmico
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{seqsplit}
+
+
+
+
+\title{Adverse drug reaction records from the Brazilian pharmacovigilance system (VigiMed), 2018--2025}
+
+\author{
+    Ana Carolina Jacoby$^{1, *}$, 
+    Silmara Gomes Barnabé$^2$, 
+    Mell Amisa Matsuda$^1$, \\
+    Mariana Recamonde Mendoza$^2$, 
+    Sílvio César Cazella$^1$
+}
+
+\date{\vspace{-5ex}} % Remove a data automática para ganhar espaço
+
+\begin{document}
+
+\maketitle
+
+% --- Afiliações e Contato ---
+\begin{center}
+    \footnotesize
+    $^1$ Federal University of Health Sciences of Porto Alegre (UFCSPA) \\
+    $^2$ Federal University of Rio Grande do Sul (UFRGS) \\
+    $^*$ Corresponding author: \texttt{ana.jacoby@ufcspa.edu.br}
+\end{center}
+
+\begin{abstract}
+
+A farmacovigilância é fundamental para o monitoramento contínuo da segurança de produtos farmacêuticos. No Brasil, o sistema VigiMed centraliza as notificações nacionais de eventos adversos. Este trabalho apresenta um conjunto de dados unificado com informações clínicas, farmacológicas e sociodemográficas de suspeitas de reações adversas a medicamentos (RAMs) e eventos adversos pós-vacinação (EAPV). Os dados derivam de relatos espontâneos submetidos à Agência Nacional de Vigilância Sanitária (ANVISA) entre 2018 a 2025. O conjunto original compreendia [X] registros e [Y] atributos. Após as etapas de pré-processamento e limpeza, foi obtido um dataset final com [Z] registros e [W] atributos. Os dados disponibilizados visam apoiar a comunidade científica em estudos de segurança de medicamentos, incluindo a identificação de potenciais sinais de segurança e a análise de desfechos clínicos. Além disso, o conjunto pode ser reutilizado no desenvolvimento e validação de abordagens metodológicas, como modelos de aprendizado de máquina, aplicados à avaliação de gravidade e à vigilância em saúde pública.
+\end{abstract}
+
+
+\section{Background & Summary}
+Seu texto aqui.
+
+\section{Methods}
+
+Os dados foram coletados do sistema nacional brasileiro de farmacovigilância, VigiMed, mantido pela Agência Nacional de Vigilância Sanitária (ANVISA). O VigiMed é o sistema oficial para a coleta de relatos espontâneos de suspeitas de reações adversas a medicamentos (RAMs) e vacinas, submetidos por profissionais de saúde, pacientes e empresas farmacêuticas em todo o território nacional.
+O conjunto de dados compreende relatos espontâneos relacionados a medicamentos e vacinas notificados entre 2018 e 2025. Os dados brutos foram obtidos a partir do Portal de Dados Abertos da ANVISA \url{https://dados.anvisa.gov.br/dados/} e posteriormente processados para a construção do conjunto de dados utilizado neste estudo.
+
+\subsection{Ethical Approval} 
+
+De acordo com a Resolução nº 510/2016 do Conselho Nacional de Saúde, este estudo está dispensado de aprovação por Comitê de Ética em Pesquisa, uma vez que utiliza dados secundários de acesso público, agregados e anonimizados. A estrutura do conjunto de dados inclui informações sobre eventos adversos, produtos suspeitos e concomitantes, cronologia das notificações, critérios de gravidade e variáveis sociodemográficas selecionadas. Em conformidade com a Lei Geral de Proteção de Dados (LGPD), não são disponibilizados identificadores diretos ou informações que permitam a identificação dos indivíduos.
+
+\section{Data Records}
+
+O conjunto de dados processado está disponível no repositório Dataverse \textbf{[inserir link]}, sob o DOI \textbf{[inserir DOI].} Os dados são fornecidos em formato CSV e abrangem notificações espontâneas de reações adversas a medicamentos e vacinas no Brasil entre 2018 e 2025. O dataset está organizado em uma arquitetura em estrela, composta por três tabelas de fatos e tabelas de dimensões compartilhadas, permitindo análises em diferentes níveis de granularidade.
+
+Fato notificações: Esta tabela contém informações detalhadas de cada notificação, incluindo a identificação da notificação, relação entre medicamentos e eventos adversos, detentor do registro, componente suspeito, ação adotada e cronologia da notificação. Também inclui indicações médicas, dosagem, duração do tratamento, início e fim da administração, forma farmacêutica, via de administração e número do lote. Chaves primárias conectam cada notificação aos registros de medicamentos e aos códigos ATC.
+
+Fato medicamentos: Fornece informações detalhadas sobre os medicamentos e vacinas notificadas em cada registro, incluindo nome do produto, princípios  ativos, detentor do registro,  código ATC, concentração, dose, forma e via de  administração, além de indicações  médicas  e problemas relacionados ao medicamento.
+
+Fato reações: Registra as reações adversas  associadas a cada  notificação, incluindo  datas  de início e término, duração,  gravidade, desfecho e indicadores de eventos graves, como óbito,  ameaça a  vida e hospitalização. Os eventos são codificados seguindo a terminologia MedDRA, permitindo a análise em vários níveis desta hierarquia.
+
+As tabelas de dimensões compartilhadas contextualizam as características sociodemográficas dos pacientes, além de atributos temporais e geográficos. Os medicamentos e as reações adversas seguem as classificações ATC/DDD e a terminologia MedDRA, respectivamente. Contudo, devido a restrições de licenciamento, os dicionários originais não são redistribuídos.
+
+Essa organização permite análises integradas, desde o nível de notificação individual até padrões de uso de medicamentos e ocorrência de eventos adversos, garantindo flexibilidade para diferentes abordagens analíticas.
+
+\textbf{SUGIRO TABELAS  FATOS DESCRITAS
+EX:}
+
+
+\begin{longtable}{
+|>{\raggedright\arraybackslash}p{5.5cm}
+|>{\raggedright\arraybackslash}p{2.5cm}
+|>{\raggedright\arraybackslash}p{6.5cm}|}
+
+\caption{Tabela Fato Reações (fat\_reacoes)} \\
+\hline
+\textbf{Variable} & \textbf{Data type} & \textbf{Description} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Variable} & \textbf{Data type} & \textbf{Description} \\
+\hline
+\endhead
+
+\seqsplit{IDENTIFICACAO\_NOTIFICACAO} & object &
+Unique identifier for the adverse event notification (e.g., BR-ANVISA-300000004). \\ \hline
+
+\seqsplit{HASH\_BRONZE} & object &
+SHA-256 hash of the original raw data columns for change detection. \\ \hline
+
+\seqsplit{HASH\_SILVER} & object &
+SHA-256 hash of the transformed data columns for change detection. \\ \hline
+
+\seqsplit{DATA\_INICIO\_HORA} & datetime64 &
+Normalized date and time when the adverse reaction started. \\ \hline
+
+\seqsplit{DATA\_FINAL\_HORA} & datetime64 &
+Normalized date and time when the adverse reaction ended or resolved. \\ \hline
+
+\seqsplit{ATUALIZADO} & object &
+Date when the notification record was last updated. \\ \hline
+
+\seqsplit{LLT\_CHAVE} & int64 &
+Foreign key to the MedDRA Low Level Term (LLT) in dim\_soc\_llt dimension table. \\ \hline
+
+\seqsplit{GRAVE\_CHAVE} & Int64 &
+Severity indicator:
+0 = Unknown;
+1 = Yes (Serious);
+2 = No (Not Serious). \\ \hline
+
+\seqsplit{DESFECHO\_CHAVE} & Int64 &
+Outcome code:
+0 = Unknown;
+1 = Not Recovered/Unresolved/Ongoing;
+2 = Recovering/Resolving;
+3 = Recovered/Resolved;
+4 = Fatal/Death;
+5 = Recovered/Resolved with sequelae. \\ \hline
+
+\seqsplit{DURACAO\_TIPO\_CHAVE} & int64 &
+Duration unit code:
+0 = Unknown;
+1 = Second(s);
+2 = Minute(s);
+3 = Hour(s);
+4 = Day(s);
+5 = Week(s);
+6 = Month(s);
+7 = Year(s);
+8 = Decade(s);
+9 = Cycle(s). \\ \hline
+
+\seqsplit{DURACAO\_VALOR} & float64 &
+Numerical value of the adverse reaction duration. Interpret together with DURACAO\_TIPO\_CHAVE. \\ \hline
+
+\seqsplit{GRAVIDADE\_RESULTADO\_OBITO} & int64 &
+Reaction resulted in death:
+1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{GRAVIDADE\_AMEACA\_VIDA} & int64 &
+Life-threatening reaction:
+1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{GRAVIDADE\_INCAPACIDADE} & int64 &
+Persistent or significant incapacity/disability:
+1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{GRAVIDADE\_HOSPITALIZACAO} & int64 &
+Required hospitalization or prolonged hospitalization:
+1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{GRAVIDADE\_OUTRO\_EFEITO} & int64 &
+Other clinically significant effect:
+1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{GRAVIDADE\_ANOMALIA\_CONGENITA} & int64 &
+Congenital anomaly or birth defect:
+1 = Yes; 0 = No. \\ \hline
+
+\end{longtable}
+
+
+
+\begin{longtable}{
+|>{\raggedright\arraybackslash}p{5.5cm}
+|>{\raggedright\arraybackslash}p{2.5cm}
+|>{\raggedright\arraybackslash}p{6.5cm}|}
+
+\caption{Tabela Fato Medicamentos (fat\_medicamentos)} \\
+\hline
+\textbf{Variable} & \textbf{Data type} & \textbf{Description} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Variable} & \textbf{Data type} & \textbf{Description} \\
+\hline
+\endhead
+
+\seqsplit{IDENTIFICACAO\_NOTIFICACAO} & object &
+Unique identifier for the adverse event notification. \\ \hline
+
+\seqsplit{NOME\_MEDICAMENTO\_WHODRUG} & object &
+Drug name according to WHODrug dictionary. \\ \hline
+
+\seqsplit{PRINCIPIOS\_ATIVOS\_WHODRUG} & object &
+Active ingredients according to WHODrug dictionary. \\ \hline
+
+\seqsplit{ATC\_CODE\_LEVEL\_4} & object &
+ATC (Anatomical Therapeutic Chemical) code at level 4. Disaggregated from pipe-delimited values. \\ \hline
+
+\seqsplit{DETENTOR\_REGISTRO\_SCORE} & float64 &
+Fuzzy matching score (0-100) for marketing authorization holder. \\ \hline
+
+\seqsplit{DETENTOR\_REGISTRO\_CHAVE} & Int64 &
+Foreign key to marketing authorization holder dimension table. 0 = Unknown. \\ \hline
+
+\seqsplit{CONCENTRACAO\_TIPO\_CHAVE} & Int64 &
+Concentration unit code (e.g., mg/ml, \%, UI/ml). \\ \hline
+
+\seqsplit{CONCENTRACAO\_TIPO\_VALOR} & object &
+Concentration unit label (e.g., "mg/ml", "percentage"). \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR} & float64 &
+Calculated concentration value (numerator/denominator ratio). \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR\_NUMERADOR} & float64 &
+Numerator value of concentration (e.g., 500 in "500mg/ml"). \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR\_DENOMINADOR} & float64 &
+Denominator value of concentration (e.g., 1 in "500mg/1ml"). \\ \hline
+
+\seqsplit{PROB\_ADIC\_ERRO\_DE\_MEDICACAO} & int64 &
+Medication error: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_EXPOSICAO\_OCUPACIONAL} & int64 &
+Occupational exposure: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_FALSIFICACAO} & int64 &
+Counterfeit/falsification: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_DENTRO\_DAS\_ESPECIFICACOES} & int64 &
+Tested batches within specifications: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_FORA\_DAS\_ESPECIFICACOES} & int64 &
+Tested batches out of specifications: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_FORA\_DA\_DATA\_DE\_VALIDADE} & int64 &
+Drug taken after expiration date: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_PELO\_PAI} & int64 &
+Drug taken by the father: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_SUPERDOSE} & int64 &
+Overdose: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_USO\_INCORRETO} & int64 &
+Incorrect use: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_USO\_OFF\_LABEL\_USO\_SEM\_REGISTRO} & int64 &
+Off-label use or unregistered use: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_ABUSO} & int64 &
+Drug abuse: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PK\_LLT\_INDICACAO\_MEDDRA} & Int64 &
+Foreign key to MedDRA LLT for reported MedDRA indication (fuzzy matched). \\ \hline
+
+\seqsplit{PK\_LLT\_INDICACAO\_RELATADA\_NOTIFICADOR\_INICIAL} & Int64 &
+Foreign key to MedDRA LLT for initial notifier reported indication (fuzzy matched). \\ \hline
+
+\seqsplit{DOSE\_TIPO\_CHAVE} & object &
+Dose unit label (e.g., "milligram (mg)", "microgram (mcg)"). \\ \hline
+
+\seqsplit{DOSE\_TIPO\_VALOR} & Int64 &
+Dose unit code. 0 = Unknown. \\ \hline
+
+\seqsplit{DOSE\_VALOR} & float64 &
+Numerical dose value. \\ \hline
+
+\seqsplit{FREQUENCIA\_DOSE} & object &
+Dose frequency description. \\ \hline
+
+\seqsplit{POSOLOGIA} & object &
+Posology/dosage regimen description. \\ \hline
+
+\seqsplit{DURACAO\_TIPO\_CHAVE} & int64 &
+Duration unit code:
+0 = Unknown; 1 = Second(s); 2 = Minute(s); 3 = Hour(s); 4 = Day(s); 5 = Week(s); 6 = Month(s); 7 = Year(s); 8 = Decade(s); 9 = Cycle(s). \\ \hline
+
+\seqsplit{DURACAO\_TIPO\_VALOR} & object &
+Duration unit label (e.g., "DIA", "HORA", "SEMANA"). \\ \hline
+
+\seqsplit{DURACAO\_VALOR} & float64 &
+Numerical duration value. Interpret with DURACAO\_TIPO\_CHAVE. \\ \hline
+
+\seqsplit{INICIO\_ADMINISTRACAO} & datetime64 &
+Normalized date when drug administration started. \\ \hline
+
+\seqsplit{FIM\_ADMINISTRACAO} & datetime64 &
+Normalized date when drug administration ended. \\ \hline
+
+\seqsplit{FORMA\_FARMACEUTICA\_SCORE} & float64 &
+Fuzzy matching score (0-100) for pharmaceutical form. \\ \hline
+
+\seqsplit{FORMA\_FARMACEUTICA\_CHAVE} & Int64 &
+Foreign key to pharmaceutical form dimension table. 0 = Unknown. \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO} & object &
+Route of administration (original text). \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO\_CHAVE} & int64 &
+Normalized route of administration code (fuzzy matched). \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO\_MAE\_PAI} & object &
+Route of administration for mother/father (original text). \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO\_MAE\_PAI\_CHAVE} & int64 &
+Normalized route code for mother/father (fuzzy matched). \\ \hline
+
+\seqsplit{NUMELO\_LOTE} & object &
+Batch/lot number of the drug. \\ \hline
+
+\seqsplit{HASH\_BRONZE} & object &
+SHA-256 hash of original raw data columns for change detection. \\ \hline
+
+\seqsplit{RELACAO\_MEDICAMENTO\_EVENTO\_VALOR} & object &
+Drug-event relationship description. \\ \hline
+
+\seqsplit{RELACAO\_MEDICAMENTO\_EVENTO\_CHAVE} & Int64 &
+Drug-event relationship code:
+0 = Unknown; 1 = Suspect; 2 = Concomitant; 3 = Drug not administered; 4 = Interaction. \\ \hline
+
+\seqsplit{COMPONENTE\_SUSPEITO\_VALOR} & object &
+Suspected component description. \\ \hline
+
+\seqsplit{COMPONENTE\_SUSPEITO\_CHAVE} & Int64 &
+Suspected component code:
+0 = Unknown; 1 = Active ingredient; 2 = Excipient; 3 = Solvent; 4 = Dye; 5 = Preservative; 6 = Flavoring agent; 7 = Overage; 8 = Antioxidant; 9 = Stabilizer. \\ \hline
+
+\seqsplit{ACAO\_ADOTADA\_VALOR} & object &
+Action taken description. \\ \hline
+
+\seqsplit{ACAO\_ADOTADA\_CHAVE} & Int64 &
+Action taken code:
+0 = Unknown; 1 = Drug withdrawn; 2 = No dose change; 3 = Not applicable; 4 = Dose reduced; 5 = Dose increased. \\ \hline
+
+\end{longtable}
+
+
+
+
+
+\section{Data Overview (optional)}
+
+Creio ser importante colocar uma  visão básica dos dados, é  opcional,  então aguardo orientação.
+
+\section{Technical Validation}
+
+\section{Usage Notes (optional)}
+
+\section{Data Availability}
+
+\section*{Code Availability}
+
+The code used for the pre-processing of the dataset presented in this paper is available at: \url{https://github.com/mlab-inf-ufrgs/vigimed}
+
+\section*{Author Contributions}
+
+A.C.J. e S.G.B. contribuíram igualmente para este trabalho. A.C.J.: concepção do estudo, modelagem de dados, curadoria de dados, análise de dados, redação. S.G.B.: concepção do estudo, modelagem de dados, curadoria de dados, análise de dados, redação. M.A.M.: processamento de dados, desenvolvimento de código, validação de dados. M.R.M.: supervisão, orientação metodológica, revisão do manuscrito. S.C.C.: supervisão, orientação metodológica, revisão do manuscrito.
+
+Todos os autores leram e aprovaram a versão final do manuscrito.
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Funding}
+
+This research did not receive specific funding.
+
+\section*{Acknowledgements}
+Os autores agradecem ao Centro Colaborador da OMS para Metodologia de Estatísticas de Medicamentos (Oslo, Noruega) pelo uso do sistema ATC/DDD e à equipe do MedDRA pelo acesso à sua terminologia sob licença acadêmica. O uso desses sistemas destina-se exclusivamente à classificação e codificação. As análises e conclusões aqui apresentadas são de inteira responsabilidade dos autores e não implicam endosso por parte dos licenciadores ou das organizações mencionadas.
+
+% --- Referências em Vancouver ---
+\bibliographystyle{vancouver}
+\bibliography{references} % Procure ter um arquivo chamado referencias.bib
+
+\end{document}

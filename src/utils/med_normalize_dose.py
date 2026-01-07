@@ -99,17 +99,18 @@ def normalize_dose(df: pd.DataFrame, col: str = "DOSE") -> pd.DataFrame:
     Normaliza a coluna de dose em três colunas:
 
     - DOSE_VALOR: parte numérica (float)
-    - DOSE_TIPO_CHAVE: unidade padronizada (ex.: 'milligram (mg)')
-    - DOSE_TIPO_VALOR: código inteiro da unidade
+    - DOSE_TIPO_VALOR: unidade padronizada (ex.: 'MILLIGRAM (MG)')
+    - DOSE_TIPO_CHAVE: código inteiro da unidade
 
     Valores sem unidade reconhecida são preenchidos com
     'desconhecido' / 0 e o valor numérico extraído permanece disponível.
     """
 
     parsed = df[col].apply(_parse_dose_value)
-    df[["DOSE_TIPO_CHAVE", "DOSE_TIPO_VALOR", "DOSE_VALOR"]] = (
+    # _parse_dose_value retorna: (label, code, value)
+    df[["DOSE_TIPO_VALOR", "DOSE_TIPO_CHAVE", "DOSE_VALOR"]] = (
         pd.DataFrame(parsed.tolist(), index=df.index)
     )
-    df["DOSE_TIPO_VALOR"] = df["DOSE_TIPO_VALOR"].astype("Int64")
+    df["DOSE_TIPO_CHAVE"] = df["DOSE_TIPO_CHAVE"].astype("Int64")
     return df
 
