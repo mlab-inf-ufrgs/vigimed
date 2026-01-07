@@ -68,6 +68,7 @@ def fuzzy_merge(
     dim_id_col: str = "ID",
     dim_text_col: str = "COL_A_LIMPA",
     fact_text_col: str = "COL_A_SUJA",
+    fillna_dim_id: int = 0,
     threshold: int = 90,
     scorer=fuzz.WRatio,
     suffix: str = "_MATCH",
@@ -82,6 +83,9 @@ def fuzzy_merge(
     - `<dim_id_col><suffix>` (ID da dimensão, dtype Int64)
     - `<fact_text_col><suffix>` (texto da dimensão correspondente)
     - `<fact_text_col>_SCORE` (0-100)
+
+    Por padrão, quando `fact_text_col` é ausente (NaN/None/'null'/'none'),
+    preenche `<dim_id_col><suffix>` com 0 (via `fillna_dim_id`) e não roda fuzzy.
     """
 
     id_match_col = f"{dim_id_col}{suffix}"
@@ -95,17 +99,32 @@ def fuzzy_merge(
     fact_work["__normalized_text"] = _normalize_text(fact_work[fact_text_col])
     dim_work["__normalized_text"] = _normalize_text(dim_work[dim_text_col])
 
-    matches = fact_work["__normalized_text"].apply(
-        lambda text: _fuzzy_match_index(
-            text,
-            dim_work["__normalized_text"],
-            threshold=threshold,
-            scorer=scorer,
-        )
+    # Fast-path: evita fuzzy para textos ausentes e faz cache por valor único
+    missing_tokens = {"NONE", "NAN", "NULL"}
+    missing_mask = (
+        fact_work[fact_text_col].isna()
+        | fact_work["__normalized_text"].eq("")
+        | fact_work["__normalized_text"].isin(missing_tokens)
     )
 
-    fact_work["__match_idx"] = matches.apply(lambda x: x[0]).astype("object")
-    fact_work[score_col] = matches.apply(lambda x: x[1])
+    fact_work["__match_idx"] = None
+    fact_work[score_col] = 0.0
+
+    to_match = fact_work.loc[~missing_mask, "__normalized_text"]
+    if len(to_match) and len(dim_work):
+        unique_texts = pd.unique(to_match)
+        match_map = {
+            t: _fuzzy_match_index(
+                t,
+                dim_work["__normalized_text"],
+                threshold=threshold,
+                scorer=scorer,
+            )
+            for t in unique_texts
+        }
+        match_series = to_match.map(match_map)
+        fact_work.loc[~missing_mask, "__match_idx"] = match_series.apply(lambda x: x[0]).astype("object")
+        fact_work.loc[~missing_mask, score_col] = match_series.apply(lambda x: x[1]).astype(float)
 
     def _safe_lookup(idx, col):
         if idx is None or pd.isna(idx):
@@ -119,9 +138,8 @@ def fuzzy_merge(
         lambda idx: _safe_lookup(idx, dim_text_col)
     )
 
-    fact_work[id_match_col] = (
-        pd.to_numeric(fact_work[id_match_col], errors="coerce").astype("Int64")
-    )
+    fact_work[id_match_col] = pd.to_numeric(fact_work[id_match_col], errors="coerce")
+    fact_work[id_match_col] = fact_work[id_match_col].fillna(fillna_dim_id).astype("Int64")
 
     fact_work = fact_work.drop(columns=["__normalized_text", "__match_idx"])
 

@@ -27,11 +27,12 @@ def build_row_hash(
     if algo not in {"sha256", "md5"}:
         raise ValueError("Somente 'sha256' ou 'md5' são suportados.")
 
-    # Seleciona colunas + garante que NaNs virem string vazia
+    # Seleciona colunas + converte para string primeiro (evita erro com Int64)
+    # depois substitui representações de NA por string vazia
     joined = (
         df[cols]
-        .fillna("")                     # evita 'nan' literais
         .astype(str)
+        .replace(["nan", "<NA>", "None", "NaT"], "")
         .agg(sep.join, axis=1)          # concatena linha a linha
     )
 

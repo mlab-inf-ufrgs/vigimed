@@ -167,14 +167,14 @@ def normalize_concentracao(df: pd.DataFrame, col: str = "CONCENTRACAO") -> pd.Da
     parsed = df[col].apply(_parse_concentration)
     df[
         [
-            "CONCENTRACAO_TIPO_CHAVE",
             "CONCENTRACAO_TIPO_VALOR",
+            "CONCENTRACAO_TIPO_CHAVE",
             "CONCENTRACAO_VALOR",
             "CONCENTRACAO_VALOR_NUMERADOR",
             "CONCENTRACAO_VALOR_DENOMINADOR",
         ]
     ] = pd.DataFrame(parsed.tolist(), index=df.index)
 
-    df["CONCENTRACAO_TIPO_VALOR"] = df["CONCENTRACAO_TIPO_VALOR"].astype("Int64")
+    df["CONCENTRACAO_TIPO_CHAVE"] = df["CONCENTRACAO_TIPO_CHAVE"].astype("Int64")
     return df
 

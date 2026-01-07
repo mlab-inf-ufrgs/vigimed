@@ -1,7 +1,7 @@
 from .helpers import get_project_root, add_key_value_columns
 from .elt import build_row_hash #, build_dataframe_has
 from .atc_normalize import normalize_principio_ativo_atc
-from .normalize import normalize_rows, normalize_date_column #, mapping_column, expandir_gravidade_wide
+from .normalize import normalize_rows, normalize_date_column, expandir_gravidade_wide #, mapping_column
 from .normalize_duration import normalize_duration
 ### Medicamentos
 from .med_pivot import desagrupar_colunas_pipe
