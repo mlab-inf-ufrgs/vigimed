@@ -1,6 +1,6 @@
 ## Pipeline `fat_medicamentos`
 
-Resumo do fluxo a partir do Parquet bronze (`data/01_bronze/Medicamentos/Medicamentos.parquet`), passando pelo `hist_silver` no notebook `elt_fat_medicamentos_new.ipynb` e chegando ao conjunto gold.
+Resumo do fluxo a partir do Parquet bronze (`data/01_bronze/anvisa/Medicamentos/Medicamentos.parquet`), passando pelo `hist_silver` no notebook `elt_fat_medicamentos_new.ipynb` e chegando ao conjunto gold.
 
 ### Conjuntos
 - **Bronze**: colunas cruas conforme arquivo original.
