@@ -1,0 +1,94 @@
+import re
+import unicodedata
+import numpy as np
+import pandas as pd
+
+_UNIDADES_GESTACIONAL = {
+    "SEMANA": {
+        "aliases": {"SEMANA", "SEMANAS", "SEM"},
+        "tipo_valor": 1,
+    },
+    "MES": {
+        "aliases": {"MES", "MESES", "MÊS", "MÊSES"},
+        "tipo_valor": 2,
+    },
+    "TRIMESTRE": {
+        "aliases": {"TRIMESTRE", "TRIMESTRES", "TRI"},
+        "tipo_valor": 3,
+    },
+}
+
+_ALIAS_LOOKUP_GESTACIONAL = {
+    alias: (unidade, cfg["tipo_valor"])
+    for unidade, cfg in _UNIDADES_GESTACIONAL.items()
+    for alias in cfg["aliases"]
+}
+
+_NUMERO_UNIDADE_RE = re.compile(
+    r"^\s*([0-9]+(?:[.,][0-9]+)?)\s*([A-Za-z]+)\s*$"
+)
+
+UNKNOWN_CHAVE = "DESCONHECIDO"
+UNKNOWN_VALOR = 0
+
+
+def _remover_acentos(texto: str) -> str:
+    return "".join(
+        ch
+        for ch in unicodedata.normalize("NFD", texto)
+        if unicodedata.category(ch) != "Mn"
+    )
+
+
+def _parse_idade_gestacional(valor):
+    """
+    Retorna:
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_CHAVE  -> 'SEMANA' | 'MES' | 'TRIMESTRE' | 'DESCONHECIDO'
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_VALOR  -> código inteiro
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_VALOR       -> valor original (float)
+    """
+    if pd.isna(valor):
+        return (UNKNOWN_CHAVE, UNKNOWN_VALOR, np.nan)
+
+    texto = str(valor).strip()
+    if not texto or texto.lower() in {"nan", "none"}:
+        return (UNKNOWN_CHAVE, UNKNOWN_VALOR, np.nan)
+
+    texto = _remover_acentos(texto).upper()
+    match = _NUMERO_UNIDADE_RE.match(texto)
+    if not match:
+        return (UNKNOWN_CHAVE, UNKNOWN_VALOR, np.nan)
+
+    numero_str, unidade_raw = match.groups()
+    unidade = _ALIAS_LOOKUP_GESTACIONAL.get(unidade_raw)
+    if not unidade:
+        return (UNKNOWN_CHAVE, UNKNOWN_VALOR, np.nan)
+
+    tipo_chave, tipo_valor = unidade
+    numero = float(numero_str.replace(",", "."))
+
+    # não normaliza
+    return (tipo_chave, tipo_valor, numero)
+
+
+def normalize_idade_gestacional_momento_reacao(
+    df: pd.DataFrame,
+    coluna: str = "IDADE_GESTACIONAL_MOMENTO_REACAO",
+) -> pd.DataFrame:
+    """
+    Cria:
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_CHAVE
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_VALOR
+    - IDADE_GESTACIONAL_MOMENTO_REACAO_VALOR (valor original, sem conversão)
+    """
+    resultados = df[coluna].apply(_parse_idade_gestacional)
+
+    df[
+        [
+            "IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_CHAVE",
+            "IDADE_GESTACIONAL_MOMENTO_REACAO_TIPO_VALOR",
+            "IDADE_GESTACIONAL_MOMENTO_REACAO_VALOR",
+        ]
+    ] = pd.DataFrame(resultados.tolist(), index=df.index)
+
+    return df
