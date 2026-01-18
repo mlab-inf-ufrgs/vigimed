@@ -20,4 +20,7 @@ from .mappings import mapping_column_from_df, apply_mappings, mapping_column
 #from .via_adm import normalizar_via_administracao
 from .scd2 import apply_scd2, apply_scd2_from_file
 
-#### Reacoes
+#### Notificacoes
+from .not_normalize_duracao import normalize_duracao
+from .not_normalize_idade_momento_reacao import normalize_idade_momento_reacao
+from .not_normalize_idade_gestacional_momento_reacao import normalize_idade_gestacional_momento_reacao
