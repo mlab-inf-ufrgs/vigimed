@@ -188,152 +188,133 @@ Congenital anomaly or birth defect:
 \endhead
 
 \seqsplit{IDENTIFICACAO\_NOTIFICACAO} & object &
-Unique identifier for the adverse event notification. \\ \hline
+Unique identifier for the adverse event notification (e.g., BR-ANVISA-300000004). \\ \hline
 
 \seqsplit{NOME\_MEDICAMENTO\_WHODRUG} & object &
-Drug name according to WHODrug dictionary. \\ \hline
+Drug name according to WHODrug dictionary (e.g., "Oxacilina", "Paracemol"). \\ \hline
 
 \seqsplit{PRINCIPIOS\_ATIVOS\_WHODRUG} & object &
-Active ingredients according to WHODrug dictionary. \\ \hline
+Active ingredients according to WHODrug dictionary (e.g., "Oxacillin sodium", "Paracetamol"). \\ \hline
 
 \seqsplit{ATC\_CODE\_LEVEL\_4} & object &
-ATC (Anatomical Therapeutic Chemical) code at level 4. Disaggregated from pipe-delimited values. \\ \hline
-
-\seqsplit{DETENTOR\_REGISTRO\_SCORE} & float64 &
-Fuzzy matching score (0-100) for marketing authorization holder. \\ \hline
-
-\seqsplit{DETENTOR\_REGISTRO\_CHAVE} & Int64 &
-Foreign key to marketing authorization holder dimension table. 0 = Unknown. \\ \hline
-
-\seqsplit{CONCENTRACAO\_TIPO\_CHAVE} & Int64 &
-Concentration unit code (e.g., mg/ml, \%, UI/ml). \\ \hline
-
-\seqsplit{CONCENTRACAO\_TIPO\_VALOR} & object &
-Concentration unit label (e.g., "mg/ml", "percentage"). \\ \hline
-
-\seqsplit{CONCENTRACAO\_VALOR} & float64 &
-Calculated concentration value (numerator/denominator ratio). \\ \hline
-
-\seqsplit{CONCENTRACAO\_VALOR\_NUMERADOR} & float64 &
-Numerator value of concentration (e.g., 500 in "500mg/ml"). \\ \hline
-
-\seqsplit{CONCENTRACAO\_VALOR\_DENOMINADOR} & float64 &
-Denominator value of concentration (e.g., 1 in "500mg/1ml"). \\ \hline
-
-\seqsplit{PROB\_ADIC\_ERRO\_DE\_MEDICACAO} & int64 &
-Medication error: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_EXPOSICAO\_OCUPACIONAL} & int64 &
-Occupational exposure: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_FALSIFICACAO} & int64 &
-Counterfeit/falsification: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_DENTRO\_DAS\_ESPECIFICACOES} & int64 &
-Tested batches within specifications: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_FORA\_DAS\_ESPECIFICACOES} & int64 &
-Tested batches out of specifications: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_FORA\_DA\_DATA\_DE\_VALIDADE} & int64 &
-Drug taken after expiration date: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_PELO\_PAI} & int64 &
-Drug taken by the father: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_SUPERDOSE} & int64 &
-Overdose: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_USO\_INCORRETO} & int64 &
-Incorrect use: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_USO\_OFF\_LABEL\_USO\_SEM\_REGISTRO} & int64 &
-Off-label use or unregistered use: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PROB\_ADIC\_ABUSO} & int64 &
-Drug abuse: 1 = Yes; 0 = No. \\ \hline
-
-\seqsplit{PK\_LLT\_INDICACAO\_MEDDRA} & Int64 &
-Foreign key to MedDRA LLT for reported MedDRA indication (fuzzy matched). \\ \hline
-
-\seqsplit{PK\_LLT\_INDICACAO\_RELATADA\_NOTIFICADOR\_INICIAL} & Int64 &
-Foreign key to MedDRA LLT for initial notifier reported indication (fuzzy matched). \\ \hline
-
-\seqsplit{DOSE\_TIPO\_CHAVE} & object &
-Dose unit label (e.g., "milligram (mg)", "microgram (mcg)"). \\ \hline
-
-\seqsplit{DOSE\_TIPO\_VALOR} & Int64 &
-Dose unit code. 0 = Unknown. \\ \hline
-
-\seqsplit{DOSE\_VALOR} & float64 &
-Numerical dose value. \\ \hline
-
-\seqsplit{FREQUENCIA\_DOSE} & object &
-Dose frequency description. \\ \hline
-
-\seqsplit{POSOLOGIA} & object &
-Posology/dosage regimen description. \\ \hline
-
-\seqsplit{DURACAO\_TIPO\_CHAVE} & int64 &
-Duration unit code:
-0 = Unknown; 1 = Second(s); 2 = Minute(s); 3 = Hour(s); 4 = Day(s); 5 = Week(s); 6 = Month(s); 7 = Year(s); 8 = Decade(s); 9 = Cycle(s). \\ \hline
-
-\seqsplit{DURACAO\_TIPO\_VALOR} & object &
-Duration unit label (e.g., "DIA", "HORA", "SEMANA"). \\ \hline
-
-\seqsplit{DURACAO\_VALOR} & float64 &
-Numerical duration value. Interpret with DURACAO\_TIPO\_CHAVE. \\ \hline
-
-\seqsplit{INICIO\_ADMINISTRACAO} & datetime64 &
-Normalized date when drug administration started. \\ \hline
-
-\seqsplit{FIM\_ADMINISTRACAO} & datetime64 &
-Normalized date when drug administration ended. \\ \hline
-
-\seqsplit{FORMA\_FARMACEUTICA\_SCORE} & float64 &
-Fuzzy matching score (0-100) for pharmaceutical form. \\ \hline
-
-\seqsplit{FORMA\_FARMACEUTICA\_CHAVE} & Int64 &
-Foreign key to pharmaceutical form dimension table. 0 = Unknown. \\ \hline
-
-\seqsplit{VIA\_ADMINISTRACAO} & object &
-Route of administration (original text). \\ \hline
-
-\seqsplit{VIA\_ADMINISTRACAO\_CHAVE} & int64 &
-Normalized route of administration code (fuzzy matched). \\ \hline
-
-\seqsplit{VIA\_ADMINISTRACAO\_MAE\_PAI} & object &
-Route of administration for mother/father (original text). \\ \hline
-
-\seqsplit{VIA\_ADMINISTRACAO\_MAE\_PAI\_CHAVE} & int64 &
-Normalized route code for mother/father (fuzzy matched). \\ \hline
-
-\seqsplit{NUMELO\_LOTE} & object &
-Batch/lot number of the drug. \\ \hline
-
-\seqsplit{HASH\_BRONZE} & object &
-SHA-256 hash of original raw data columns for change detection. \\ \hline
-
-\seqsplit{RELACAO\_MEDICAMENTO\_EVENTO\_VALOR} & object &
-Drug-event relationship description. \\ \hline
+ATC (Anatomical Therapeutic Chemical) code at level 4 (e.g., "J01CF", "N02BE"). Disaggregated from pipe-delimited values. \\ \hline
 
 \seqsplit{RELACAO\_MEDICAMENTO\_EVENTO\_CHAVE} & Int64 &
 Drug-event relationship code:
 0 = Unknown; 1 = Suspect; 2 = Concomitant; 3 = Drug not administered; 4 = Interaction. \\ \hline
 
-\seqsplit{COMPONENTE\_SUSPEITO\_VALOR} & object &
-Suspected component description. \\ \hline
+\seqsplit{DETENTOR\_REGISTRO\_CHAVE} & Int64 &
+Foreign key to marketing authorization holder dimension table (hist\_dim\_detentor\_registro). Fuzzy matched with threshold=95. 0 = Unknown. \\ \hline
+
+\seqsplit{CONCENTRACAO\_TIPO\_CHAVE} & Int64 &
+Concentration unit code:
+0 = Unknown; 1 = mg; 2 = g; 3 = ug; 4 = mL; 5 = \%; 6 = mg/mL; 7 = mg/mg; 8 = mg/g; 9 = g/mL. \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR} & float64 &
+Calculated concentration value. For simple units equals the numerator; for ratio units equals numerator/denominator. \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR\_NUMERADOR} & float64 &
+Numerator value of concentration (e.g., 500 in "500mg" or "500mg/mL"). \\ \hline
+
+\seqsplit{CONCENTRACAO\_VALOR\_DENOMINADOR} & float64 &
+Denominator value of concentration (e.g., 1 in "500mg/1mL"). NULL for simple units. \\ \hline
 
 \seqsplit{COMPONENTE\_SUSPEITO\_CHAVE} & Int64 &
 Suspected component code:
 0 = Unknown; 1 = Active ingredient; 2 = Excipient; 3 = Solvent; 4 = Dye; 5 = Preservative; 6 = Flavoring agent; 7 = Overage; 8 = Antioxidant; 9 = Stabilizer. \\ \hline
 
-\seqsplit{ACAO\_ADOTADA\_VALOR} & object &
-Action taken description. \\ \hline
-
 \seqsplit{ACAO\_ADOTADA\_CHAVE} & Int64 &
 Action taken code:
 0 = Unknown; 1 = Drug withdrawn; 2 = No dose change; 3 = Not applicable; 4 = Dose reduced; 5 = Dose increased. \\ \hline
+
+\seqsplit{PROB\_ADIC\_ABUSO} & int64 &
+Drug abuse flag: 1 = Yes; 0 = No. Expanded from pipe-delimited source field. \\ \hline
+
+\seqsplit{PROB\_ADIC\_ERRO\_DE\_MEDICACAO} & int64 &
+Medication error flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_EXPOSICAO\_OCUPACIONAL} & int64 &
+Occupational exposure flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_FALSIFICACAO} & int64 &
+Counterfeit/falsification flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_DENTRO\_DAS\_ESPECIFICACOES} & int64 &
+Tested batches within specifications flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_LOTES\_TESTADOS\_E\_FORA\_DAS\_ESPECIFICACOES} & int64 &
+Tested batches out of specifications flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_FORA\_DA\_DATA\_DE\_VALIDADE} & int64 &
+Drug taken after expiration date flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_MEDICAMENTO\_TOMADO\_PELO\_PAI} & int64 &
+Drug taken by the father (paternal exposure) flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_SUPERDOSE} & int64 &
+Overdose flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_USO\_INCORRETO} & int64 &
+Incorrect use flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{PROB\_ADIC\_USO\_OFF\_LABEL\_USO\_SEM\_REGISTRO} & int64 &
+Off-label use or unregistered use flag: 1 = Yes; 0 = No. \\ \hline
+
+\seqsplit{INDICACAO\_MEDDRA\_LLT\_CHAVE} & Int64 &
+Foreign key to MedDRA LLT dimension (dim\_soc\_llt) for reported MedDRA indication. Fuzzy matched with threshold=98. 0 = No match. \\ \hline
+
+\seqsplit{INDICACAO\_RELATADA\_NOTIFICADOR\_INICIAL\_LLT\_CHAVE} & Int64 &
+Foreign key to MedDRA LLT dimension (dim\_soc\_llt) for initial notifier reported indication. Fuzzy matched with threshold=98. 0 = No match. \\ \hline
+
+\seqsplit{DOSE\_TIPO\_CHAVE} & Int64 &
+Dose unit code:
+0 = Unknown; 1 = mg; 2 = mcg; 3 = g; 4 = mL; 5 = dosage form; and others. \\ \hline
+
+\seqsplit{DOSE\_VALOR} & float64 &
+Numerical dose value extracted from original DOSE field (e.g., 100 from "100 milligram (mg)"). \\ \hline
+
+\seqsplit{FREQUENCIA\_DOSE} & object &
+Dose frequency description as reported (e.g., "6 hora", "1x ao dia"). \\ \hline
+
+\seqsplit{POSOLOGIA} & object &
+Posology/dosage regimen description as reported. \\ \hline
+
+\seqsplit{DURACAO\_TIPO\_CHAVE} & int64 &
+Duration unit code:
+0 = Unknown; 1 = Second(s); 2 = Minute(s); 3 = Hour(s); 4 = Day(s); 5 = Week(s); 6 = Month(s); 7 = Year(s); 8 = Decade(s); 9 = Cycle(s). \\ \hline
+
+\seqsplit{DURACAO\_VALOR} & float64 &
+Numerical duration value. Interpret with DURACAO\_TIPO\_CHAVE (e.g., 4 with type 4 = "4 days"). \\ \hline
+
+\seqsplit{INICIO\_ADMINISTRACAO} & datetime64[ns] &
+Normalized date when drug administration started. Converted from YYYYMMDD format. \\ \hline
+
+\seqsplit{FIM\_ADMINISTRACAO} & datetime64[ns] &
+Normalized date when drug administration ended. Converted from YYYYMMDD format. \\ \hline
+
+\seqsplit{FORMA\_FARMACEUTICA\_CHAVE} & Int64 &
+Foreign key to pharmaceutical form dimension table (hist\_dim\_forma\_farmaceutica). Fuzzy matched with threshold=95. 0 = Unknown. \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO\_CHAVE} & int64 &
+Normalized route of administration code. Fuzzy matched with threshold=80. 0 = Unknown; 5 = Oral; 6 = Parenteral. \\ \hline
+
+\seqsplit{VIA\_ADMINISTRACAO\_MAE\_PAI\_CHAVE} & int64 &
+Normalized route of administration code for mother/father exposure. Fuzzy matched with threshold=80. \\ \hline
+
+\seqsplit{NUMELO\_LOTE} & object &
+Batch/lot number of the drug as reported. \\ \hline
+
+\seqsplit{ATUALIZADO} & object &
+Date when the record was last updated in the source system. \\ \hline
+
+\seqsplit{HASH\_BRONZE} & object &
+SHA-256 hash of original Bronze layer columns (excluding ATUALIZADO) for change detection. \\ \hline
+
+\seqsplit{HASH\_SILVER} & object &
+SHA-256 hash of Silver layer columns for change detection after transformations. \\ \hline
+
+\seqsplit{HASH\_GOLD} & object &
+SHA-256 hash of all Gold layer columns for final data integrity verification. \\ \hline
 
 \end{longtable}
 
