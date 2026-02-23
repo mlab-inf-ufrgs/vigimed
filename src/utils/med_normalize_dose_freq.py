@@ -121,23 +121,23 @@ def _parse_interval_part(text: str):
     return (value, UNKNOWN_LABEL, UNKNOWN_CODE)
 
 
-def _parse_frequency_value(raw) -> Tuple[float, float, str, int]:
+def _parse_frequency_value(raw) -> Tuple[float, float, int, str]:
     if pd.isna(raw):
-        return (np.nan, np.nan, UNKNOWN_LABEL, UNKNOWN_CODE)
+        return (np.nan, np.nan, UNKNOWN_CODE, UNKNOWN_LABEL)
 
     text = str(raw).strip()
     if not text:
-        return (np.nan, np.nan, UNKNOWN_LABEL, UNKNOWN_CODE)
+        return (np.nan, np.nan, UNKNOWN_CODE, UNKNOWN_LABEL)
 
     normalized = _normalize_text(text)
     if not normalized:
-        return (np.nan, np.nan, UNKNOWN_LABEL, UNKNOWN_CODE)
+        return (np.nan, np.nan, UNKNOWN_CODE, UNKNOWN_LABEL)
 
     direct_spec = _match_unit(normalized)
     if direct_spec:
         if direct_spec["category"] == "time":
-            return (1.0, 1.0, direct_spec["label"], direct_spec["code"])
-        return (1.0, np.nan, direct_spec["label"], direct_spec["code"])
+            return (1.0, 1.0, direct_spec["code"], direct_spec["label"])
+        return (1.0, np.nan, direct_spec["code"], direct_spec["label"])
 
     if _POR_SPLIT_RE.search(normalized):
         left, right = _POR_SPLIT_RE.split(normalized, maxsplit=1)
@@ -145,43 +145,36 @@ def _parse_frequency_value(raw) -> Tuple[float, float, str, int]:
         if np.isnan(doses):
             doses = 1.0
         interval_value, label, code = _parse_interval_part(right)
-        return (doses, interval_value, label, code)
+        return (doses, interval_value, code, label)
 
     value, remainder = _split_number_unit(normalized)
     if not np.isnan(value) and remainder:
         spec = _match_unit(remainder)
         if spec:
             if spec["category"] == "time":
-                return (1.0, value, spec["label"], spec["code"])
-            return (value, np.nan, spec["label"], spec["code"])
+                return (1.0, value, spec["code"], spec["label"])
+            return (value, np.nan, spec["code"], spec["label"])
 
     if not np.isnan(value) and not remainder:
-        return (value, np.nan, UNKNOWN_LABEL, UNKNOWN_CODE)
+        return (value, np.nan, UNKNOWN_CODE, UNKNOWN_LABEL)
 
-    return (np.nan, np.nan, UNKNOWN_LABEL, UNKNOWN_CODE)
+    return (np.nan, np.nan, UNKNOWN_CODE, UNKNOWN_LABEL)
 
 
 def normalize_dose_freq(df: pd.DataFrame, col: str = "FREQUENCIA_DOSE") -> pd.DataFrame:
-    """
-    Deriva colunas estruturadas a partir de uma frequência textual.
-    Cria:
-      - FREQUENCIA_DOSE_DOSES: quantidade de administrações no intervalo declarado
-      - FREQUENCIA_DOSE_INTERVALO_VALOR: tamanho do intervalo (float)
-      - FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE: unidade normalizada (hora, dia, etc.)
-      - FREQUENCIA_DOSE_INTERVALO_TIPO_VALOR: código inteiro da unidade
-    """
     parsed = df[col].apply(_parse_frequency_value)
+
     df[
         [
             "FREQUENCIA_DOSE_DOSES",
             "FREQUENCIA_DOSE_INTERVALO_VALOR",
-            "FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE",
-            "FREQUENCIA_DOSE_INTERVALO_TIPO_VALOR",
+            "FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE",  
+            "FREQUENCIA_DOSE_INTERVALO_TIPO_VALOR",   
         ]
     ] = pd.DataFrame(parsed.tolist(), index=df.index)
 
-    df["FREQUENCIA_DOSE_INTERVALO_TIPO_VALOR"] = df[
-        "FREQUENCIA_DOSE_INTERVALO_TIPO_VALOR"
+    df["FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE"] = df[
+        "FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE"
     ].astype("Int64")
-    return df
 
+    return df

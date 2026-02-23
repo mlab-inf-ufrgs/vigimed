@@ -15,17 +15,11 @@ from .med_normalize_via_adm_keyword_data import (
     CANONICAL_METADATA,
 )
 
-
 SPECIAL_SEQUENCE_PATTERN = re.compile(r"_x[0-9a-f]{4}_", re.IGNORECASE)
 NON_ALPHABETIC_PATTERN = re.compile(r"[^a-z\s]")
 EXTRA_WHITESPACE_PATTERN = re.compile(r"\s+")
 
-
 def _normalize_text(value) -> str:
-    """
-    Normaliza texto removendo acentos, caracteres especiais,
-    dígitos e sequências como '_x0009_'.
-    """
     text = unidecode(str(value) or "")
     text = SPECIAL_SEQUENCE_PATTERN.sub(" ", text)
     text = text.replace("\n", " ").replace("\r", " ").replace("\t", " ")
@@ -50,20 +44,18 @@ def _dedupe_preserve_order(values: Iterable[str]) -> List[str]:
     return result
 
 CANONICAL_KEYWORDS = {
-    code: _dedupe_preserve_order(words)
-    for code, words in BASE_CANONICAL_KEYWORDS.items()
+    label: _dedupe_preserve_order(words)
+    for label, words in BASE_CANONICAL_KEYWORDS.items()
 }
 
 MANUAL_LOOKUP: Dict[str, str] = {}
-for code, keywords in CANONICAL_KEYWORDS.items():
-    normalized_keywords = []
+
+for label, keywords in CANONICAL_KEYWORDS.items():
     for keyword in keywords:
         normalized_keyword = _normalize_text(keyword)
-        if not normalized_keyword:
-            continue
-        MANUAL_LOOKUP[normalized_keyword] = code
-        normalized_keywords.append(keyword)
-    CANONICAL_KEYWORDS[code] = normalized_keywords
+        if normalized_keyword:
+            MANUAL_LOOKUP[normalized_keyword] = label
+
 
 UNKNOWN_TOKENS = sorted(
     {
@@ -73,54 +65,60 @@ UNKNOWN_TOKENS = sorted(
     }
 )
 
-
 CANONICAL_FLAT = []
-for code, words in CANONICAL_KEYWORDS.items():
-    for w in words:
-        normalized = _normalize_text(w)
-        if not normalized:
-            continue
-        CANONICAL_FLAT.append((normalized, code))
+
+for label, words in CANONICAL_KEYWORDS.items():
+    for word in words:
+        normalized = _normalize_text(word)
+        if normalized:
+            CANONICAL_FLAT.append((normalized, label))
 
 CANDIDATE_TEXTS = [text for text, _ in CANONICAL_FLAT]
-CANDIDATE_CODES = [code for _, code in CANONICAL_FLAT]
+CANDIDATE_LABELS = [label for _, label in CANONICAL_FLAT]
+
+def _is_unknown(text: str) -> bool:
+    return any(token in text for token in UNKNOWN_TOKENS)
 
 
-def _preprocess(text: str) -> str:
-    return _normalize_text(text)
+def _build_struct(label: str) -> dict:
+    code = CANONICAL_CODE_MAP.get(label, CANONICAL_CODE_MAP["desconhecido"])
+    description = CANONICAL_DESCRIPTIONS.get(label, CANONICAL_DESCRIPTIONS["desconhecido"])
+    metadata = CANONICAL_METADATA.get(label, CANONICAL_METADATA["desconhecido"])
 
+    return {
+        "chave": code,
+        "valor": label,
+        "description": description,
+        "description_pt": metadata.get("description_pt", description),
+    }
 
 def normalizar_via_fuzzy(
     value: str,
     *,
     score_threshold: int = 80,
-    return_numeric: bool = False,
-    return_description: bool = False,
-    return_description_pt: bool = False,
-) -> str | int:
+) -> dict:
     """
-    Normaliza via de administração usando fuzzy matching
-    contra palavras canônicas definidas em CANONICAL_KEYWORDS.
-    Retorna um dos códigos:
-      Implant, Inhal, Instill, N, O, P, R, SL, TD, V
-    ou 'desconhecido'. Quando `return_numeric=True`, retorna o
-    identificador numérico correspondente (0 para desconhecido).
-    Quando `return_description=True`, retorna a descrição em inglês.
-    Quando `return_description_pt=True`, retorna a descrição em português.
+    Normaliza via de administração usando fuzzy matching.
+    Retorna sempre um dicionário estruturado:
+    {
+        "chave": int,
+        "valor": str,
+        "description": str,
+        "description_pt": str
+    }
     """
+
     if pd.isna(value):
-        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
+        return _build_struct("desconhecido")
 
-    s = _preprocess(value)
+    s = _normalize_text(value)
 
-    manual_code = MANUAL_LOOKUP.get(s)
-    if manual_code:
-        return _return_result(manual_code, return_numeric, return_description, return_description_pt)
+    if s in MANUAL_LOOKUP:
+        return _build_struct(MANUAL_LOOKUP[s])
 
     if not s or _is_unknown(s):
-        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
+        return _build_struct("desconhecido")
 
-    # 3) Fuzzy: compara a string s com todas as palavras canônicas
     best, score, idx = process.extractOne(
         s,
         CANDIDATE_TEXTS,
@@ -128,22 +126,8 @@ def normalizar_via_fuzzy(
     )
 
     if score < score_threshold:
-        return _return_result("desconhecido", return_numeric, return_description, return_description_pt)
+        return _build_struct("desconhecido")
 
-    # recupera o código associado à palavra canônica escolhida
-    return _return_result(CANDIDATE_CODES[idx], return_numeric, return_description, return_description_pt)
+    label = CANDIDATE_LABELS[idx]
 
-
-def _is_unknown(text: str) -> bool:
-    return any(unknown in text for unknown in UNKNOWN_TOKENS)
-
-
-def _return_result(label: str, return_numeric: bool, return_description: bool, return_description_pt: bool = False) -> str | int:
-    if return_description_pt:
-        metadata = CANONICAL_METADATA.get(label, CANONICAL_METADATA["desconhecido"])
-        return metadata.get("description_pt", metadata.get("description", label))
-    if return_description:
-        return CANONICAL_DESCRIPTIONS.get(label, CANONICAL_DESCRIPTIONS["desconhecido"])
-    if return_numeric:
-        return CANONICAL_CODE_MAP.get(label, CANONICAL_CODE_MAP["desconhecido"])
-    return label
+    return _build_struct(label)
