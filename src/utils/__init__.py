@@ -15,6 +15,12 @@ from .med_atc_hierarchy import extract_atc_levels, build_dim_atc, expand_atc_hie
 from .med_problemas_relacionados_uso import expandir_lista_wide
 #from .med_normalize_detentor import fuzzy_merge_detentor
 from .elt_fuzzy_merge import fuzzy_merge, hungarian_text_link
+from .elt_meddra_match import (
+    meddra_exact_match,
+    meddra_fuzzy_match,
+    meddra_match_pipeline,
+    get_match_summary,
+)
 #from .med_normalize_via_adm import normalizar_via_administracao
 from .mappings import mapping_column_from_df, apply_mappings, mapping_column
 #from .via_adm import normalizar_via_administracao
