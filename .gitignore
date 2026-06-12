@@ -1,3 +1,8 @@
 /tests
 venv/
 .env
+
+# Dados grandes / derivados
+data/03_gold/fat_analytical
+data/01_bronze/atc
+data/01_bronze/meddra
