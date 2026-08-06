@@ -14,7 +14,7 @@ Neste repositório esses arquivos entram na camada **bronze** e são transformad
 
 ## Origem e equipe
 
-A iniciativa nasceu no **mestrado da Ana Carolina Jacoby** (UFCSPA), sob orientação do prof. **Sílvio César Cazella**. O trabalho se consolidou em parceria com **Silmara Gomes Barnabé** (UFRGS) na disciplina da professora **Carla** (**CIARS**), com apoio de coordenação da profa. **Mariana Recamonde Mendoza** (orientadora da Silmara). **Mell Amisa Matsuda** integrou o time como bolsista.
+A iniciativa nasceu no mestrado da **[Ana Carolina Jacoby](http://lattes.cnpq.br/6000861146264396)** (UFCSPA), sob orientação do prof. **[Sílvio César Cazella](http://lattes.cnpq.br/9173977294178020)**. O trabalho se consolidou em parceria com **[Silmara Gomes Barnabé](http://lattes.cnpq.br/4686076038752039)** (UFRGS) na disciplina da professora **[Carla Maria Dal Sasso Freitas](http://lattes.cnpq.br/4093653182381054)** ([CIARS](https://www.ufrgs.br/ciars/)), com apoio de coordenação da profa. **[Mariana Recamonde-Mendoza](http://lattes.cnpq.br/7829435808451741)** (orientadora da Silmara). **[Mell Amisa Matsuda](http://lattes.cnpq.br/4305262417608808)** integrou o time como bolsista. A profa. **[Carine Raquel Blatt](http://lattes.cnpq.br/4746842392238066)** também integra a equipe do dataset publicado.
 
 Dicionário de dados (camada gold): [`docs/data_dictionary.md`](docs/data_dictionary.md) · ERD: [`docs/erd.md`](docs/erd.md).
 
@@ -199,17 +199,6 @@ Os dados do VigiMed são publicados pela Anvisa em dados abertos. ATC e MedDRA p
 Se usar a versão **gold** publicada no Dataverse, cite (incluindo a versão do dataset):
 
 > Jacoby, Ana Carolina; Barnabé, Silmara; Matsuda, Mell Amisa; Blatt, Carine Raquel; Cazella, Silvio César; Recamonde-Mendoza, Mariana, 2026, "Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)", https://doi.org/10.7910/DVN/DRWDMU, Harvard Dataverse, **V2**.
-
-Currículos Lattes das autoras e autores:
-
-| Pessoa | Lattes |
-| --- | --- |
-| Ana Carolina Jacoby | [lattes.cnpq.br/6000861146264396](http://lattes.cnpq.br/6000861146264396) |
-| Silmara Gomes Barnabé | [lattes.cnpq.br/4686076038752039](http://lattes.cnpq.br/4686076038752039) |
-| Mell Amisa Matsuda | [lattes.cnpq.br/4305262417608808](http://lattes.cnpq.br/4305262417608808) |
-| Carine Raquel Blatt | [lattes.cnpq.br/4746842392238066](http://lattes.cnpq.br/4746842392238066) |
-| Sílvio César Cazella | [lattes.cnpq.br/9173977294178020](http://lattes.cnpq.br/9173977294178020) |
-| Mariana Recamonde-Mendoza | [lattes.cnpq.br/7829435808451741](http://lattes.cnpq.br/7829435808451741) |
 
 BibTeX (exemplo):
 
