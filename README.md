@@ -2,6 +2,9 @@
 
 Projeto para centralizar a ingestão, processamento e análise dos dados do [VigiMed](https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao-e-monitoramento/notificacoes/vigimed) (Anvisa), enriquecidos com terminologias [ATC](https://www.who.int/tools/atc-ddd-toolkit/atc-classification) (OMS) e [MedDRA](https://www.meddra.org/how-to-use).
 
+**Começar a usar o repositório:** [`docs/start_here.md`](docs/start_here.md)  
+**Dicionário / ERD (gold):** [`docs/data_dictionary.md`](docs/data_dictionary.md) · [`docs/erd.md`](docs/erd.md)
+
 A Anvisa publica semanalmente, em [dados abertos](https://dados.anvisa.gov.br/dados/), três CSVs do sistema VigiMed (notificações espontâneas de suspeitas de eventos adversos a medicamentos):
 
 | Arquivo | Conteúdo |
@@ -14,13 +17,15 @@ Neste repositório esses arquivos entram na camada **bronze** e são transformad
 
 ## Origem e equipe
 
-A iniciativa nasceu no **mestrado da Ana Carolina Jacoby** (UFCSPA), sob orientação do prof. **Sílvio César Cazella**. O trabalho se consolidou em parceria com **Silmara Gomes Barnabé** (UFRGS) na disciplina da professora **Carla** (**CIARS**), com apoio de coordenação da profa. **Mariana Recamonde Mendoza** (orientadora da Silmara). **Mell Amisa Matsuda** integrou o time como bolsista.
+A iniciativa nasceu no mestrado da **[Ana Carolina Jacoby](http://lattes.cnpq.br/6000861146264396)** (UFCSPA), sob orientação do prof. **[Sílvio César Cazella](http://lattes.cnpq.br/9173977294178020)**. O trabalho se consolidou em parceria com **[Silmara Gomes Barnabé](http://lattes.cnpq.br/4686076038752039)** (UFRGS) na disciplina da professora **[Carla Maria Dal Sasso Freitas](http://lattes.cnpq.br/4093653182381054)** ([CIARS](https://www.ufrgs.br/ciars/)), com apoio de coordenação da profa. **[Mariana Recamonde-Mendoza](http://lattes.cnpq.br/7829435808451741)** (orientadora da Silmara). **[Mell Amisa Matsuda](http://lattes.cnpq.br/4305262417608808)** integrou o time como bolsista. A profa. **[Carine Raquel Blatt](http://lattes.cnpq.br/4746842392238066)** também integra a equipe do dataset publicado.
 
-Dicionário de dados (camada gold): [`docs/data_dictionary.md`](docs/data_dictionary.md) · ERD: [`docs/erd.md`](docs/erd.md).
+## Pipeline ELT
 
-### Pipeline ELT
+Fluxo Bronze → Silver → Gold, com enriquecimento ATC/MedDRA, publicação no Dataverse e exploração analítica.
 
-Fluxo Bronze → Silver → Gold, com enriquecimento ATC/MedDRA e consumo analítico (desproporcionalidade).
+![Data pipeline for VigiMed — from public sources to interoperable gold data and open publication](docs/pipe_eng.png)
+
+Diagrama Mermaid (resumo):
 
 ```mermaid
 flowchart LR
@@ -77,13 +82,8 @@ flowchart LR
     G1 & G2 & G3 & G4 & G5 --> AN --> DA
 ```
 
-Notebooks em [`src/etl/`](src/etl/) (ingestão/transformação) e consumo analítico em [`src/analytical/`](src/analytical/) + [`eda/disproportionality_analysis/`](eda/disproportionality_analysis/).
-
-### ERD — camada gold
-
-Esquema em estrela / fact constellation (`dim_notificacoes` + `fat_medicamentos` + `fat_reacoes`).
-
-O diagrama Mermaid completo, **em partes e com todas as colunas**, está em [`docs/erd.md`](docs/erd.md).
+Detalhes de setup, estrutura de pastas e por onde começar: [`docs/start_here.md`](docs/start_here.md).  
+ERD completo (todas as colunas): [`docs/erd.md`](docs/erd.md).
 
 ## Créditos e fontes de dados
 
@@ -108,88 +108,6 @@ Esse material já embasou estudos acadêmicos, incluindo:
 - a **dissertação** da Ana Carolina Jacoby ([registro / divulgação](https://www.instagram.com/p/DYfmyebyNGN/));
 - a **revisão de escopo** sobre métodos de data mining em farmacovigilância, de Ana Carolina Jacoby e Mell Amisa Matsuda (com Carine Raquel Blatt e Sílvio César Cazella): [*Data mining methods, tasks, and algorithms for adverse drug reaction analysis in pharmacovigilance: A scoping review*](https://pubmed.ncbi.nlm.nih.gov/42378892/) (*Int J Med Inform*, 2026; PMID: 42378892; DOI: [10.1016/j.ijmedinf.2026.106554](https://doi.org/10.1016/j.ijmedinf.2026.106554)).
 
-## Setup
-
-Requisitos: Python 3.9+ e `pip`.
-
-### 1. Clone e ambiente virtual
-
-```bash
-git clone https://github.com/mlab-inf-ufrgs/vigimed.git
-cd vigimed
-
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-```
-
-### 2. Instalar dependências
-
-As libs do projeto estão em [`src/requirements.txt`](src/requirements.txt) (pandas, DuckDB, Jupyter, visualização, etc.):
-
-```bash
-pip install -r src/requirements.txt
-```
-
-Alternativa via notebook: abra [`src/libs.ipynb`](src/libs.ipynb) e execute a célula
-
-```python
-%pip install -r requirements.txt
-```
-
-(o notebook assume o working directory em `src/`).
-
-### 3. Verificar a instalação
-
-No terminal, com o `.venv` ativado:
-
-```bash
-python - <<'PY'
-import pandas as pd
-import pyarrow
-import duckdb
-import rapidfuzz
-import scipy
-import matplotlib
-import seaborn
-import plotly
-
-print("OK — dependências principais importadas com sucesso")
-print(f"  pandas {pd.__version__}")
-print(f"  duckdb {duckdb.__version__}")
-PY
-```
-
-Se aparecer `OK — dependências principais importadas com sucesso`, o ambiente está pronto.
-
-Para usar os notebooks no Jupyter/VS Code, registre o kernel do venv:
-
-```bash
-python -m ipykernel install --user --name=vigimed --display-name="Python (vigimed)"
-```
-
-## Estrutura do repositório
-
-```bash
-vigimed/
-├── config/                 # Bootstrap (sys.path / project root)
-├── data/                   # Camadas Bronze → Silver → Gold
-│   ├── 01_bronze/
-│   ├── 02_silver/
-│   └── 03_gold/
-├── docs/                   # Documentação (data_dictionary.md, erd.md)
-├── eda/                    # Exploração e análise de desproporcionalidade
-├── src/
-│   ├── analytical/         # Build do DF analítico e métricas (stubs)
-│   ├── etl/                # Notebooks ELT/ETL (medicamentos, notificações, reações)
-│   ├── utils/              # Funções auxiliares de normalização e merge
-│   ├── libs.ipynb          # Instalação das libs via notebook
-│   └── requirements.txt    # Dependências Python
-├── tests/                  # Validações e checks da silver/gold
-│   ├── validacao_medicamentos/
-│   ├── validacao_notificacao/
-│   └── validacao_reacoes/
-```
-
 ## Licença de uso dos dados
 
 Os dados do VigiMed são publicados pela Anvisa em dados abertos. ATC e MedDRA possuem políticas próprias de uso e redistribuição — consulte os links na seção de créditos antes de republicar conteúdo derivado.
@@ -199,17 +117,6 @@ Os dados do VigiMed são publicados pela Anvisa em dados abertos. ATC e MedDRA p
 Se usar a versão **gold** publicada no Dataverse, cite (incluindo a versão do dataset):
 
 > Jacoby, Ana Carolina; Barnabé, Silmara; Matsuda, Mell Amisa; Blatt, Carine Raquel; Cazella, Silvio César; Recamonde-Mendoza, Mariana, 2026, "Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)", https://doi.org/10.7910/DVN/DRWDMU, Harvard Dataverse, **V2**.
-
-Currículos Lattes das autoras e autores:
-
-| Pessoa | Lattes |
-| --- | --- |
-| Ana Carolina Jacoby | [lattes.cnpq.br/6000861146264396](http://lattes.cnpq.br/6000861146264396) |
-| Silmara Gomes Barnabé | [lattes.cnpq.br/4686076038752039](http://lattes.cnpq.br/4686076038752039) |
-| Mell Amisa Matsuda | [lattes.cnpq.br/4305262417608808](http://lattes.cnpq.br/4305262417608808) |
-| Carine Raquel Blatt | [lattes.cnpq.br/4746842392238066](http://lattes.cnpq.br/4746842392238066) |
-| Sílvio César Cazella | [lattes.cnpq.br/9173977294178020](http://lattes.cnpq.br/9173977294178020) |
-| Mariana Recamonde-Mendoza | [lattes.cnpq.br/7829435808451741](http://lattes.cnpq.br/7829435808451741) |
 
 BibTeX (exemplo):
 
