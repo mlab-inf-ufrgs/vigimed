@@ -13,6 +13,8 @@ Este dataset contém notificações de eventos adversos (ICSRs) do VigiMed, o si
 
 **Public release / Publicação:** [Harvard Dataverse — doi:10.7910/DVN/DRWDMU](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DRWDMU)
 
+**ERD (Mermaid, todas as colunas):** [`erd.md`](erd.md)
+
 ---
 
 ## Technical Specifications / Especificações Técnicas

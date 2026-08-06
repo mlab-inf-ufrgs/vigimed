@@ -2,15 +2,21 @@
 
 Projeto para centralizar a ingestão, processamento e análise dos dados do [VigiMed](https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao-e-monitoramento/notificacoes/vigimed) (Anvisa), enriquecidos com terminologias [ATC](https://www.who.int/tools/atc-ddd-toolkit/atc-classification) (OMS) e [MedDRA](https://www.meddra.org/how-to-use).
 
-Os datasets públicos do VigiMed são atualizados semanalmente e disponibilizados em CSV:
+A Anvisa publica semanalmente, em [dados abertos](https://dados.anvisa.gov.br/dados/), três CSVs do sistema VigiMed (notificações espontâneas de suspeitas de eventos adversos a medicamentos):
 
-- `VigiMed_Notificacoes.csv`
-- `VigiMed_Medicamentos.csv`
-- `VigiMed_Reacoes.csv`
+| Arquivo | Conteúdo |
+| --- | --- |
+| `VigiMed_Notificacoes.csv` | Caso / ICSR (paciente, datas, gravidade, desfecho, notificador) |
+| `VigiMed_Medicamentos.csv` | Medicamentos vinculados à notificação (WHO Drug, ATC, dose, via, etc.) |
+| `VigiMed_Reacoes.csv` | Reações adversas relatadas (texto / termos associados ao caso) |
 
-Fonte dos arquivos brutos: [dados abertos da Anvisa](https://dados.anvisa.gov.br/dados/).
+Neste repositório esses arquivos entram na camada **bronze** e são transformados até a **gold** (modelo dimensional + terminologias ATC e MedDRA).
 
-Dicionário de dados (camada gold): [`docs/data_dictionary.md`](docs/data_dictionary.md).
+## Origem e equipe
+
+A iniciativa nasceu no **mestrado da Ana Carolina Jacoby** (UFCSPA), sob orientação do prof. **Sílvio César Cazella**. O trabalho se consolidou em parceria com **Silmara Gomes Barnabé** (UFRGS) na disciplina da professora **Carla** (**CIARS**), com apoio de coordenação da profa. **Mariana Recamonde Mendoza** (orientadora da Silmara). **Mell Amisa Matsuda** integrou o time como bolsista.
+
+Dicionário de dados (camada gold): [`docs/data_dictionary.md`](docs/data_dictionary.md) · ERD: [`docs/erd.md`](docs/erd.md).
 
 ### Pipeline ELT
 
@@ -73,87 +79,11 @@ flowchart LR
 
 Notebooks em [`src/etl/`](src/etl/) (ingestão/transformação) e consumo analítico em [`src/analytical/`](src/analytical/) + [`eda/disproportionality_analysis/`](eda/disproportionality_analysis/).
 
-### ERD — camada gold (chaves)
+### ERD — camada gold
 
-Esquema em estrela / fact constellation: `dim_notificacoes` liga as facts `fat_medicamentos` e `fat_reacoes`; dimensões de medicamento e MedDRA/ATC completam o modelo.
+Esquema em estrela / fact constellation (`dim_notificacoes` + `fat_medicamentos` + `fat_reacoes`).
 
-```mermaid
-erDiagram
-    dim_notificacoes ||--o{ fat_medicamentos : "IDENTIFICACAO_NOTIFICACAO"
-    dim_notificacoes ||--o{ fat_reacoes : "IDENTIFICACAO_NOTIFICACAO"
-
-    fat_medicamentos }o--|| dim_atc : "ATC_CODE_LEVEL_4"
-    fat_medicamentos }o--|| dim_detentor_registro : "DETENTOR_REGISTRO_CHAVE"
-    fat_medicamentos }o--|| dim_concentracao : "CONCENTRACAO_TIPO_CHAVE"
-    fat_medicamentos }o--|| dim_dose : "DOSE_TIPO_CHAVE"
-    fat_medicamentos }o--|| dim_duracao : "DURACAO_TIPO_CHAVE"
-    fat_medicamentos }o--|| dim_forma_farmaceutica : "FORMA_FARMACEUTICA_CHAVE"
-    fat_medicamentos }o--|| dim_via_adm : "VIA_ADMINISTRACAO_CHAVE"
-    fat_medicamentos }o--|| dim_via_adm : "VIA_ADMINISTRACAO_MAE_PAI_CHAVE"
-
-    fat_reacoes }o--|| dim_soc_llt : "REACAO_CHAVE"
-    fat_reacoes }o--|| dim_duracao : "DURACAO_TIPO_CHAVE"
-
-    dim_notificacoes {
-        string IDENTIFICACAO_NOTIFICACAO PK
-    }
-
-    fat_medicamentos {
-        string IDENTIFICACAO_NOTIFICACAO FK
-        string ATC_CODE_LEVEL_4 FK
-        int DETENTOR_REGISTRO_CHAVE FK
-        int CONCENTRACAO_TIPO_CHAVE FK
-        int DOSE_TIPO_CHAVE FK
-        int DURACAO_TIPO_CHAVE FK
-        int FORMA_FARMACEUTICA_CHAVE FK
-        int VIA_ADMINISTRACAO_CHAVE FK
-        int VIA_ADMINISTRACAO_MAE_PAI_CHAVE FK
-    }
-
-    fat_reacoes {
-        string IDENTIFICACAO_NOTIFICACAO FK
-        string REACAO_CHAVE FK
-        int DURACAO_TIPO_CHAVE FK
-    }
-
-    dim_atc {
-        string ATC_CODE_LEVEL_4 PK
-    }
-
-    dim_soc_llt {
-        string REACAO_CHAVE PK
-    }
-
-    dim_detentor_registro {
-        int DETENTOR_REGISTRO_CHAVE PK
-    }
-
-    dim_concentracao {
-        int CONCENTRACAO_TIPO_CHAVE PK
-    }
-
-    dim_dose {
-        string DOSE_TIPO_CHAVE PK
-    }
-
-    dim_dose_frequencia {
-        int FREQUENCIA_DOSE_INTERVALO_TIPO_CHAVE PK
-    }
-
-    dim_duracao {
-        int DURACAO_TIPO_CHAVE PK
-    }
-
-    dim_forma_farmaceutica {
-        int FORMA_FARMACEUTICA_CHAVE PK
-    }
-
-    dim_via_adm {
-        int VIA_ADMINISTRACAO_CHAVE PK
-    }
-```
-
-> Diagrama completo (todas as colunas): [draw.io](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#G1z0v-POQDdwkInzBVEe6cLE4_uBEn7GZD#%7B%22pageId%22%3A%221UQrTR_ZhEASL8xhWuEK%22%7D).
+O diagrama Mermaid completo, **em partes e com todas as colunas**, está em [`docs/erd.md`](docs/erd.md).
 
 ## Créditos e fontes de dados
 
@@ -246,7 +176,7 @@ vigimed/
 │   ├── 01_bronze/
 │   ├── 02_silver/
 │   └── 03_gold/
-├── docs/                   # Documentação (ex.: data_dictionary.md)
+├── docs/                   # Documentação (data_dictionary.md, erd.md)
 ├── eda/                    # Exploração e análise de desproporcionalidade
 ├── src/
 │   ├── analytical/         # Build do DF analítico e métricas (stubs)
@@ -263,3 +193,34 @@ vigimed/
 ## Licença de uso dos dados
 
 Os dados do VigiMed são publicados pela Anvisa em dados abertos. ATC e MedDRA possuem políticas próprias de uso e redistribuição — consulte os links na seção de créditos antes de republicar conteúdo derivado.
+
+### Como citar
+
+Se usar a versão **gold** publicada no Dataverse, cite (incluindo a versão do dataset):
+
+> Jacoby, Ana Carolina; Barnabé, Silmara; Matsuda, Mell Amisa; Blatt, Carine Raquel; Cazella, Silvio César; Recamonde-Mendoza, Mariana, 2026, "Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)", https://doi.org/10.7910/DVN/DRWDMU, Harvard Dataverse, **V2**.
+
+Currículos Lattes das autoras e autores:
+
+| Pessoa | Lattes |
+| --- | --- |
+| Ana Carolina Jacoby | [lattes.cnpq.br/6000861146264396](http://lattes.cnpq.br/6000861146264396) |
+| Silmara Gomes Barnabé | [lattes.cnpq.br/4686076038752039](http://lattes.cnpq.br/4686076038752039) |
+| Mell Amisa Matsuda | [lattes.cnpq.br/4305262417608808](http://lattes.cnpq.br/4305262417608808) |
+| Carine Raquel Blatt | [lattes.cnpq.br/4746842392238066](http://lattes.cnpq.br/4746842392238066) |
+| Sílvio César Cazella | [lattes.cnpq.br/9173977294178020](http://lattes.cnpq.br/9173977294178020) |
+| Mariana Recamonde-Mendoza | [lattes.cnpq.br/7829435808451741](http://lattes.cnpq.br/7829435808451741) |
+
+BibTeX (exemplo):
+
+```bibtex
+@data{DVN/DRWDMU_2026,
+  author    = {Jacoby, Ana Carolina and Barnab{\'e}, Silmara and Matsuda, Mell Amisa and Blatt, Carine Raquel and Cazella, Silvio C{\'e}sar and Recamonde-Mendoza, Mariana},
+  title     = {{Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018--2025)}},
+  year      = {2026},
+  publisher = {Harvard Dataverse},
+  version   = {V2},
+  doi       = {10.7910/DVN/DRWDMU},
+  url       = {https://doi.org/10.7910/DVN/DRWDMU}
+}
+```
