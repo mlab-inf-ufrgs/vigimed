@@ -73,14 +73,16 @@ vigimed/
 │   ├── 02_silver/
 │   └── 03_gold/
 ├── docs/                   # Documentação (este guia, dicionário, ERD)
-├── eda/                    # Exploração e análise de desproporcionalidade
+├── eda/                    # Análise de desproporcionalidade e materiais auxiliares
 ├── src/
 │   ├── analytical/         # Build do DF analítico e métricas (stubs)
 │   ├── etl/                # Notebooks ELT/ETL (medicamentos, notificações, reações)
 │   ├── utils/              # Funções auxiliares de normalização e merge
 │   ├── libs.ipynb          # Instalação das libs via notebook
 │   └── requirements.txt    # Dependências Python
-├── tests/                  # Validações e checks da silver/gold
+├── tests/                  # EDA exploratória, dashboard e validações silver/gold
+│   ├── eda_*.ipynb / analytics.ipynb
+│   ├── vigimed_dash.pbix
 │   ├── validacao_medicamentos/
 │   ├── validacao_notificacao/
 │   └── validacao_reacoes/
@@ -91,7 +93,7 @@ vigimed/
 1. **Só consumir a gold publicada** — baixe o dataset no [Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DRWDMU) (versão **V2**) e use o [`data_dictionary.md`](data_dictionary.md) / [`erd.md`](erd.md).
 2. **Rodar / estender o ETL** — notebooks em [`src/etl/`](../src/etl/) (por domínio: `medicamentos/`, `notificacoes/`, `reacoes/`). Use `%run` do [`config/bootstrap.py`](../config/bootstrap.py) para resolver o `project_root` e imports de `utils`.
 3. **Análise de desproporcionalidade** — stubs em [`src/analytical/`](../src/analytical/) e notebooks em [`eda/disproportionality_analysis/`](../eda/disproportionality_analysis/).
-4. **Validar saídas** — notebooks em [`tests/validacao_*`](../tests/).
+4. **Explorar / validar** — notebooks de EDA e validações em [`tests/`](../tests/) (`eda_*`, `analytics.ipynb`, `validacao_*`).
 
 ## Pipeline (resumo)
 
