@@ -83,6 +83,9 @@ Este dataset contém notificações de eventos adversos (ICSRs) do VigiMed, o si
 | NOME_MEDICAMENTO_WHODRUG | string | WHO Drug product name | Nome do medicamento (WHO Drug) |
 | PRINCIPIOS_ATIVOS_WHODRUG | string | Active substance(s) | Princípio(s) ativo(s) |
 | ATC_CODE_LEVEL_4 | string | ATC level 4 (FK → `dim_atc`) | Código ATC nível 4 (FK) |
+| ATC_CODE_LEVEL_5 | string | Inferred ATC level-5 code (via `dim_atc` + substance match) | Código ATC nível 5 inferido (`dim_atc` + princípio ativo) |
+| ATC_LEVEL_5 | string | Label `{code}_{name}` (PT/EN match); missing if unmatched | Rótulo `{código}_{nome}` (match PT/EN); missing se sem match |
+| ATC_LEVEL_5_SCORE | float | Match confidence 0–100 | Confiança do match 0–100 |
 | DETENTOR_REGISTRO | string | Marketing authorization holder (raw/matched text) | Detentor do registro (texto) |
 | DETENTOR_REGISTRO_SCORE | float | Fuzzy match score | Score do match fuzzy |
 | DETENTOR_REGISTRO_CHAVE | integer | Holder key (FK → `dim_detentor_registro`) | Chave do detentor (FK) |

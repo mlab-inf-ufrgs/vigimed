@@ -44,11 +44,12 @@ Para cada coluna mapeada, são criadas `<COL>_VALOR` (texto upper) e `<COL>_CHAV
 - `INDICACAO_MEDDRA` e `INDICACAO_RELATADA_NOTIFICADOR_INICIAL`: fuzzy merge com `dim_soc_llt` (MedDRA LLT), produzindo `PK_LLT_*` e scores.
 - `PROBLEMAS_ADICIONAIS_RELCIONADOS_MEDICAMENTO`: `expandir_lista_wide` cria dummies `PROB_ADIC_*` para cada ocorrência.
 - `CODIGO_ATC`: renomeado para `ATC_CODE_LEVEL_4` e desagregado quando há múltiplos valores (`desagrupar_colunas_pipe`), gerando `hist_silver_dedup`.
+- `ATC_LEVEL_5` / `ATC_CODE_LEVEL_5`: inferidos em gold via `add_atc_level_5(fat, dim_atc)` — match do princípio ativo WHO-Drug (PT/EN) aos nomes de nível 5 da `dim_atc` no mesmo `ATC_CODE_LEVEL_4`, com fallback por nome global; sem match → missing (`null`).
 - Hashes adicionais: `HASH_SILVER` e, ao final, `HASH_GOLD` com colunas selecionadas.
 
 ### Colunas finais (gold)
 - Seleção e renomeações aplicadas sobre `hist_silver_dedup`, incluindo:
-  - Identificadores e textos principais (`IDENTIFICACAO_NOTIFICACAO`, `NOME_MEDICAMENTO_WHODRUG`, `PRINCIPIOS_ATIVOS_WHODRUG`, `ATC_CODE_LEVEL_4`).
+  - Identificadores e textos principais (`IDENTIFICACAO_NOTIFICACAO`, `NOME_MEDICAMENTO_WHODRUG`, `PRINCIPIOS_ATIVOS_WHODRUG`, `ATC_CODE_LEVEL_4`, `ATC_CODE_LEVEL_5`, `ATC_LEVEL_5`).
   - Chaves/scores fuzzy (`DETENTOR_REGISTRO_CHAVE`, `DETENTOR_REGISTRO_SCORE`, `FORMA_FARMACEUTICA_CHAVE`, `FORMA_FARMACEUTICA_SCORE`).
   - Medidas normalizadas (`CONCENTRACAO_*`, `DOSE_*`, `DURACAO_*`).
   - Via de administração (`VIA_ADMINISTRACAO[_MAE_PAI]` e chaves).
