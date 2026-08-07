@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Optional, Tuple
 
 import numpy as np
@@ -31,7 +33,7 @@ def _normalize_text(series: pd.Series) -> pd.Series:
 
 def _fuzzy_match_index(
     text: str,
-    choices: pd.Series,
+    choices: list[str] | dict[int, str],
     *,
     threshold: int,
     scorer=fuzz.WRatio,
@@ -40,16 +42,19 @@ def _fuzzy_match_index(
     if not text:
         return (None, 0.0)
 
-    match = process.extractOne(text, choices, scorer=scorer)
+    # score_cutoff evita varrer a dimensão inteira quando o melhor possível já é < threshold
+    match = process.extractOne(
+        text,
+        choices,
+        scorer=scorer,
+        score_cutoff=threshold,
+    )
     if not match:
         return (None, 0.0)
 
     matched_text = match[0] if match[0] is not None else ""
-    choice_index = match[2]
+    choice_index = int(match[2])
     score = float(match[1])
-
-    if score < threshold:
-        return (None, score)
 
     candidate_text = str(matched_text)
     max_len = max(len(text), len(candidate_text), 1)
@@ -112,16 +117,28 @@ def fuzzy_merge(
 
     to_match = fact_work.loc[~missing_mask, "__normalized_text"]
     if len(to_match) and len(dim_work):
+        # list + dict de índices: bem mais rápido que passar Series ao RapidFuzz
+        choices_list = dim_work["__normalized_text"].tolist()
+        choices = {i: t for i, t in enumerate(choices_list) if t}
+        exact_index: dict[str, int] = {}
+        for i, t in choices.items():
+            if t not in exact_index:
+                exact_index[t] = i
+
         unique_texts = pd.unique(to_match)
-        match_map = {
-            t: _fuzzy_match_index(
-                t,
-                dim_work["__normalized_text"],
-                threshold=threshold,
-                scorer=scorer,
-            )
-            for t in unique_texts
-        }
+        match_map: dict[Any, Tuple[Optional[int], float]] = {}
+        for t in unique_texts:
+            exact_idx = exact_index.get(t)
+            if exact_idx is not None:
+                match_map[t] = (exact_idx, 100.0)
+            else:
+                match_map[t] = _fuzzy_match_index(
+                    t,
+                    choices,
+                    threshold=threshold,
+                    scorer=scorer,
+                )
+
         match_series = to_match.map(match_map)
         fact_work.loc[~missing_mask, "__match_idx"] = match_series.apply(lambda x: x[0]).astype("object")
         fact_work.loc[~missing_mask, score_col] = match_series.apply(lambda x: x[1]).astype(float)
