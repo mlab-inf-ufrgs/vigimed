@@ -142,6 +142,8 @@ erDiagram
         string ATC_CODE_LEVEL_5
         string ATC_LEVEL_5
         float ATC_LEVEL_5_SCORE
+        string TIPO_PRODUTO
+        int VACINA_FLAG
         string DETENTOR_REGISTRO
         float DETENTOR_REGISTRO_SCORE
         int DETENTOR_REGISTRO_CHAVE FK
@@ -279,6 +281,8 @@ erDiagram
         string ATC_CODE_LEVEL_4 FK
         string ATC_CODE_LEVEL_5
         string ATC_LEVEL_5
+        string TIPO_PRODUTO
+        int VACINA_FLAG
         int INDICACAO_MEDDRA_REACAO_CHAVE FK
         int INDICACAO_RELATADA_NOTIFICADOR_INICIAL_REACAO_CHAVE FK
     }
