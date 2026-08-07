@@ -1,46 +1,55 @@
 # VigiMed
 
-Projeto para centralizar a ingestão, processamento e análise dos dados do [VigiMed](https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao-e-monitoramento/notificacoes/vigimed) (Anvisa), enriquecidos com terminologias [ATC](https://www.who.int/tools/atc-ddd-toolkit/atc-classification) (OMS) e [MedDRA](https://www.meddra.org/how-to-use).
+Project for ingesting, processing, and analyzing data from **VigiMed**, the Brazilian Health Regulatory Agency (ANVISA) pharmacovigilance system, enriched with the **ATC** (WHO) and **MedDRA** medical terminologies.
 
-**Começar a usar o repositório:** [`docs/start_here.md`](docs/start_here.md)  
-**Dicionário / ERD (gold):** [`docs/data_dictionary.md`](docs/data_dictionary.md) · [`docs/erd.md`](docs/erd.md)
+🇺🇸 **English** | [🇧🇷 Português](README.pt-BR.md)
 
-A Anvisa publica semanalmente, em [dados abertos](https://dados.anvisa.gov.br/dados/), três CSVs do sistema VigiMed (notificações espontâneas de suspeitas de eventos adversos a medicamentos):
+**Getting started:** [`docs/start_here.md`](docs/start_here.md)
 
-| Arquivo | Conteúdo |
-| --- | --- |
-| `VigiMed_Notificacoes.csv` | Caso / ICSR (paciente, datas, gravidade, desfecho, notificador) |
-| `VigiMed_Medicamentos.csv` | Medicamentos vinculados à notificação (WHO Drug, ATC, dose, via, etc.) |
-| `VigiMed_Reacoes.csv` | Reações adversas relatadas (texto / termos associados ao caso) |
+**Data Dictionary / Gold ERD:** [`docs/data_dictionary.md`](docs/data_dictionary.md) · [`docs/erd.md`](docs/erd.md)
 
-Neste repositório esses arquivos entram na camada **bronze** e são transformados até a **gold** (modelo dimensional + terminologias ATC e MedDRA).
+---
 
-## Origem e equipe
+ANVISA publishes three CSV files weekly through the Brazilian Open Data Portal, containing spontaneous reports of suspected adverse drug reactions submitted to the VigiMed system.
 
-A iniciativa nasceu no mestrado da **[Ana Carolina Jacoby](http://lattes.cnpq.br/6000861146264396)** (UFCSPA), sob orientação do prof. **[Sílvio César Cazella](http://lattes.cnpq.br/9173977294178020)**. O trabalho se consolidou em parceria com **[Silmara Gomes Barnabé](http://lattes.cnpq.br/4686076038752039)** (UFRGS) na disciplina da professora **[Carla Maria Dal Sasso Freitas](http://lattes.cnpq.br/4093653182381054)** ([CIARS](https://www.ufrgs.br/ciars/)), com apoio de coordenação da profa. **[Mariana Recamonde-Mendoza](http://lattes.cnpq.br/7829435808451741)** (orientadora da Silmara). **[Mell Amisa Matsuda](http://lattes.cnpq.br/4305262417608808)** integrou o time como bolsista. A profa. **[Carine Raquel Blatt](http://lattes.cnpq.br/4746842392238066)** também integra a equipe do dataset publicado.
+| File | Description |
+|------|-------------|
+| `VigiMed_Notificacoes.csv` | Individual Case Safety Reports (ICSRs): patient information, reporting dates, seriousness, outcomes, and reporter information. |
+| `VigiMed_Medicamentos.csv` | Medications associated with each notification (WHO Drug, ATC classification, dose, route of administration, etc.). |
+| `VigiMed_Reacoes.csv` | Reported adverse drug reactions associated with each notification. |
 
-## Pipeline ELT
+Within this repository, these source datasets are ingested into the **Bronze** layer and transformed into the **Gold** layer through an intermediate **Silver** layer, resulting in a dimensional data warehouse enriched with **ATC** and **MedDRA** terminologies.
 
-Fluxo Bronze → Silver → Gold, com enriquecimento ATC/MedDRA, publicação no Dataverse e exploração analítica.
+---
 
-![Data pipeline for VigiMed — from public sources to interoperable gold data and open publication](docs/pipe_eng.png)
+## Project Background
 
-Diagrama Mermaid (resumo):
+The project originated from the master's research of **[Ana Carolina Jacoby](http://lattes.cnpq.br/6000861146264396)** at the **Federal University of Health Sciences of Porto Alegre (UFCSPA)**, under the supervision of **Prof. [Sílvio César Cazella](http://lattes.cnpq.br/9173977294178020)**.
+
+It was subsequently expanded and consolidated through a collaboration with **[Silmara Gomes Barnabé](http://lattes.cnpq.br/4686076038752039)** (Federal University of Rio Grande do Sul – UFRGS) as part of the graduate course taught by **Prof. [Carla Maria Dal Sasso Freitas](http://lattes.cnpq.br/4093653182381054)** at the **[CIARS Research Center](https://www.ufrgs.br/ciars/)**, with additional support from **Prof. [Mariana Recamonde-Mendoza](http://lattes.cnpq.br/7829435808451741)**, Silmara Barnabé's academic advisor.
+
+The published dataset is the result of a collaborative effort involving **[Ana Carolina Jacoby](http://lattes.cnpq.br/6000861146264396)**, **[Silmara Gomes Barnabé](http://lattes.cnpq.br/4686076038752039)**, **[Mell Amisa Matsuda](http://lattes.cnpq.br/4305262417608808)**, **Prof. [Carine Raquel Blatt](http://lattes.cnpq.br/4746842392238066)**, **Prof. [Sílvio César Cazella](http://lattes.cnpq.br/9173977294178020)**, and **Prof. [Mariana Recamonde-Mendoza](http://lattes.cnpq.br/7829435808451741)**.
+
+# ELT Pipeline
+
+The repository implements an **ELT pipeline** based on a **Bronze → Silver → Gold** architecture. During processing, the original VigiMed data are standardized, integrated with the **ATC** and **MedDRA** terminologies, and transformed into a dimensional data warehouse. The resulting analytical dataset is then used for disproportionality analyses and published through **Harvard Dataverse**.
+
+**Mermaid overview:**
 
 ```mermaid
 flowchart LR
-    subgraph Fontes
-        A1[Anvisa<br/>VigiMed CSV]
-        A2[OMS<br/>ATC/DDD]
+    subgraph Sources
+        A1[ANVISA<br/>VigiMed CSV]
+        A2[WHO<br/>ATC/DDD]
         A3[MedDRA<br/>SOC / LLT]
     end
 
     subgraph Bronze["01_bronze"]
-        B1[Notificacoes]
-        B2[Medicamentos]
-        B3[Reacoes]
-        B4[ATC raw]
-        B5[MedDRA raw]
+        B1[Notifications]
+        B2[Medications]
+        B3[Reactions]
+        B4[Raw ATC]
+        B5[Raw MedDRA]
     end
 
     subgraph Silver["02_silver"]
@@ -56,12 +65,12 @@ flowchart LR
         G3[fat_reacoes]
         G4[dim_atc]
         G5[dim_soc_llt]
-        G6[dims de domínio]
+        G6[Domain dimensions]
     end
 
     subgraph Analytical
         AN[fat_analytical]
-        DA[Desproporcionalidade<br/>ROR · PRR · IC · EBGM]
+        DA[Disproportionality<br/>ROR · PRR · IC · EBGM]
     end
 
     A1 --> B1 & B2 & B3
@@ -82,43 +91,74 @@ flowchart LR
     G1 & G2 & G3 & G4 & G5 --> AN --> DA
 ```
 
-Detalhes de setup, estrutura de pastas e por onde começar: [`docs/start_here.md`](docs/start_here.md).  
-ERD completo (todas as colunas): [`docs/erd.md`](docs/erd.md).
+For environment setup, repository organization, and usage instructions, see [`docs/start_here.md`](docs/start_here.md).
 
-## Créditos e fontes de dados
+The complete Entity-Relationship Diagram (ERD), including all tables and columns in the Gold layer, is available in [`docs/erd.md`](docs/erd.md).
 
-Este projeto depende de dados e terminologias disponibilizados publicamente. Atribuímos crédito às instituições responsáveis:
 
-| Fonte | O que usamos | Link |
-| --- | --- | --- |
-| **Anvisa — VigiMed** | Notificações espontâneas de suspeitas de eventos adversos a medicamentos no Brasil | [Página VigiMed](https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao-e-monitoramento/notificacoes/vigimed) · [Dados abertos](https://dados.anvisa.gov.br/dados/) |
-| **OMS — ATC/DDD** | Classificação Anatômica Terapêutica Química (níveis 1–5) para agrupamento de medicamentos | [ATC Classification](https://www.who.int/tools/atc-ddd-toolkit/atc-classification) |
-| **MedDRA** | Terminologia médica para reações adversas (ex.: SOC, PT, LLT) | [How to use MedDRA](https://www.meddra.org/how-to-use) |
+# Data Sources and Acknowledgments
 
-O uso de MedDRA está sujeito aos termos e condições da MSSO/ICH. Consulte a documentação oficial antes de redistribuir ou publicar derivados que incluam a terminologia.
+This project relies on publicly available datasets and standardized medical terminologies. We gratefully acknowledge the organizations responsible for making these resources available.
 
-## Dataset Gold (Dataverse) e publicações
+| Source | Resource Used | Link |
+|--------|---------------|------|
+| **ANVISA — VigiMed** | Brazilian spontaneous reports of suspected adverse drug reactions | [VigiMed](https://www.gov.br/anvisa/pt-br/assuntos/fiscalizacao-e-monitoramento/notificacoes/vigimed) · [Open Data Portal](https://dados.anvisa.gov.br/dados/) |
+| **WHO — ATC/DDD** | Anatomical Therapeutic Chemical (ATC) Classification System (levels 1–5) used for medication classification and aggregation | https://www.who.int/tools/atc-ddd-toolkit/atc-classification |
+| **MedDRA** | International standardized medical terminology for coding adverse drug reactions (e.g., SOC, PT, LLT) | https://www.meddra.org/how-to-use |
 
-A versão **gold** processada deste projeto foi publicada no Harvard Dataverse:
+Use of **MedDRA** is subject to the licensing terms and conditions established by the **MedDRA Maintenance and Support Services Organization (MSSO)** and the **International Council for Harmonisation (ICH)**. Please consult the official documentation before redistributing or publishing derivative works containing MedDRA terminology.
 
-- **Dataset:** [doi:10.7910/DVN/DRWDMU](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DRWDMU)
+---
 
-Esse material já embasou estudos acadêmicos, incluindo:
+# Gold Dataset (Harvard Dataverse)
 
-- a **dissertação** da Ana Carolina Jacoby ([registro / divulgação](https://www.instagram.com/p/DYfmyebyNGN/));
-- a **revisão de escopo** sobre métodos de data mining em farmacovigilância, de Ana Carolina Jacoby e Mell Amisa Matsuda (com Carine Raquel Blatt e Sílvio César Cazella): [*Data mining methods, tasks, and algorithms for adverse drug reaction analysis in pharmacovigilance: A scoping review*](https://pubmed.ncbi.nlm.nih.gov/42378892/) (*Int J Med Inform*, 2026; PMID: 42378892; DOI: [10.1016/j.ijmedinf.2026.106554](https://doi.org/10.1016/j.ijmedinf.2026.106554)).
+The processed **Gold** layer generated by this project is publicly available through **Harvard Dataverse**.
 
-## Licença de uso dos dados
+**Dataset**
 
-Os dados do VigiMed são publicados pela Anvisa em dados abertos. ATC e MedDRA possuem políticas próprias de uso e redistribuição — consulte os links na seção de créditos antes de republicar conteúdo derivado.
+- **Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)**
+- DOI: **10.7910/DVN/DRWDMU**
+- Harvard Dataverse
+- Current version: **V2**
 
-### Como citar
+https://doi.org/10.7910/DVN/DRWDMU
 
-Se usar a versão **gold** publicada no Dataverse, cite (incluindo a versão do dataset):
+---
 
-> Jacoby, Ana Carolina; Barnabé, Silmara; Matsuda, Mell Amisa; Blatt, Carine Raquel; Cazella, Silvio César; Recamonde-Mendoza, Mariana, 2026, "Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)", https://doi.org/10.7910/DVN/DRWDMU, Harvard Dataverse, **V2**.
+# Publications
 
-BibTeX (exemplo):
+The dataset has already supported multiple academic studies, including:
+
+- **Master's dissertation** by **Ana Carolina Jacoby**.
+- **Scoping review**:
+
+> Jacoby AC, Matsuda MA, Blatt CR, Cazella SC.
+> *Data mining methods, tasks, and algorithms for adverse drug reaction analysis in pharmacovigilance: A scoping review.*
+> **International Journal of Medical Informatics.** 2026.
+> PMID: 42378892.
+> DOI: https://doi.org/10.1016/j.ijmedinf.2026.106554
+
+---
+
+# Data Usage and Licensing
+
+The VigiMed datasets are published by **ANVISA** through the Brazilian Open Data Portal.
+
+The **ATC** classification system and **MedDRA** terminology are distributed under their respective licensing and redistribution policies.
+
+Please consult the official documentation provided by each organization before redistributing or publishing derivative datasets that include these terminologies.
+
+---
+
+# Citation
+
+If you use the published **Gold** dataset, please cite the corresponding dataset version.
+
+> Jacoby, Ana Carolina; Barnabé, Silmara; Matsuda, Mell Amisa; Blatt, Carine Raquel; Cazella, Silvio César; Recamonde-Mendoza, Mariana, 2026, *Spontaneous Reporting of Adverse Drug Events in Brazil: VigiMed Dataset (2018–2025)*, Harvard Dataverse, Version 2. https://doi.org/10.7910/DVN/DRWDMU
+
+---
+
+# BibTeX
 
 ```bibtex
 @data{DVN/DRWDMU_2026,
