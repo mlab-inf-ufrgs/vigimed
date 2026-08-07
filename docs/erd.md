@@ -1,14 +1,18 @@
-# ERD — camada gold (VigiMed)
+# ERD — Gold layer / Camada gold (VigiMed)
 
-Esquema em **fact constellation** / estrela: `dim_notificacoes` conecta as facts `fat_medicamentos` e `fat_reacoes`. Dimensões ATC, MedDRA e de domínio enriquecem as facts.
+[EN] Fact constellation (also known as a galaxy schema): the ` dim_notificacoes` dimension links the ` fat_medicamentos` and `fat_reacoes` fact tables. ATC, MedDRA, and other domain-specific dimensions enrich the fact tables.
 
-Dicionário de dados: [`data_dictionary.md`](data_dictionary.md) · Start here: [`start_here.md`](start_here.md) · draw.io inicial: [abrir](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#G1z0v-POQDdwkInzBVEe6cLE4_uBEn7GZD#%7B%22pageId%22%3A%221UQrTR_ZhEASL8xhWuEK%22%7D)
+[PT] Esquema em **fact constellation** / estrela: `dim_notificacoes` conecta as facts `fat_medicamentos` e `fat_reacoes`. Dimensões ATC, MedDRA e de domínio enriquecem as facts.
 
-## Pipeline (visão geral)
+
+
+Data Dictionary / Dicionário de dados: [`data_dictionary.md`](data_dictionary.md) · Start here: [`start_here.md`](start_here.md) · draw.io inicial: [abrir](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#G1z0v-POQDdwkInzBVEe6cLE4_uBEn7GZD#%7B%22pageId%22%3A%221UQrTR_ZhEASL8xhWuEK%22%7D)
+
+##  Pipeline Overview / Pipeline (visão geral)
 
 ![Data pipeline for VigiMed — from public sources to interoperable gold data and open publication](pipe_eng.png)
 
-## Visão geral (relacionamentos)
+## Relationship Overview / Visão geral (relacionamentos)
 
 ```mermaid
 erDiagram
@@ -69,7 +73,9 @@ erDiagram
 
 > `dim_dose_frequencia` existe na gold; em `fat_medicamentos` a frequência atual está em texto (`FREQUENCIA_DOSE`).
 
-## 1. Núcleo — notificação, medicamentos e reações
+> `dim_dose_frequencia` is available in the Gold layer. Currently, the dosing frequency is stored as text in the `fat_medicamentos` fact table, in the (`FREQUENCIA_DOSE`).
+
+## 1. Core entities — notifications, medications, and adverse reactions /  Núcleo — notificação, medicamentos e reações
 
 ```mermaid
 erDiagram
@@ -211,7 +217,7 @@ erDiagram
     }
 ```
 
-## 2. Dimensões de medicamento (domínio)
+## 2. Medication domain dimensions / Dimensões de medicamento (domínio)
 
 ```mermaid
 erDiagram
@@ -266,7 +272,7 @@ erDiagram
     }
 ```
 
-## 3. Terminologias — ATC e MedDRA
+## 3. Standard terminologies — ATC and MedDRA / Terminologias — ATC e MedDRA
 
 ```mermaid
 erDiagram
