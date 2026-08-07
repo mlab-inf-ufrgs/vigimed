@@ -11,8 +11,6 @@ Data Dictionary / Dicionário de dados: [`data_dictionary.md`](data_dictionary.m
 
 ![Data pipeline for VigiMed — from public sources to interoperable gold data and open publication](pipe_eng.png)
 
-Consulte a **versão em português** do pipeline [aqui](./pipe_completa.png).
-
 ## Relationship Overview / Visão geral (relacionamentos)
 
 ```mermaid
