@@ -5,12 +5,13 @@
 [PT] Esquema em **fact constellation** / estrela: `dim_notificacoes` conecta as facts `fat_medicamentos` e `fat_reacoes`. Dimensões ATC, MedDRA e de domínio enriquecem as facts.
 
 
-
 Data Dictionary / Dicionário de dados: [`data_dictionary.md`](data_dictionary.md) · Start here: [`start_here.md`](start_here.md) · draw.io inicial: [abrir](https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#G1z0v-POQDdwkInzBVEe6cLE4_uBEn7GZD#%7B%22pageId%22%3A%221UQrTR_ZhEASL8xhWuEK%22%7D)
 
 ##  Pipeline Overview / Pipeline (visão geral)
 
 ![Data pipeline for VigiMed — from public sources to interoperable gold data and open publication](pipe_eng.png)
+
+Consulte a **versão em português** do pipeline [aqui](./pipe_completa.png).
 
 ## Relationship Overview / Visão geral (relacionamentos)
 
