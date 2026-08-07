@@ -1,5 +1,5 @@
 # Data Dictionary / Dicionário de Dados
-## VigiMed Dataset — camada Gold
+## VigiMed Dataset — Gold layer / Camada Gold
 
 ---
 
@@ -13,13 +13,13 @@ Este dataset contém notificações de eventos adversos (ICSRs) do VigiMed, o si
 
 **Public release / Publicação:** [Harvard Dataverse — doi:10.7910/DVN/DRWDMU](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DRWDMU)
 
-**ERD (Mermaid, todas as colunas):** [`erd.md`](erd.md)
+**ERD (Mermaid, todas as colunas /All columns):** [`erd.md`](erd.md)
 
 ---
 
 ## Technical Specifications / Especificações Técnicas
 
-- **Format / Formato:** Parquet (também CSV em algumas dimensões)
+- **Format / Formato:** Parquet (também CSV em algumas dimensões / also in CSV format for some dimensions)
 - **Main key / Chave principal:** `IDENTIFICACAO_NOTIFICACAO`
 - **Tools / Ferramentas:** Python, SQL, DuckDB, Jupyter
 - **Source code / Código:** https://github.com/mlab-inf-ufrgs/vigimed
