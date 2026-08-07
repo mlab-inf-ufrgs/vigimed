@@ -4,7 +4,7 @@ from .atc_normalize import normalize_principio_ativo_atc
 from .normalize import normalize_rows, normalize_date_column, expandir_gravidade_wide #, mapping_column
 from .normalize_duration import normalize_duration
 ### Medicamentos
-from .med_pivot import desagrupar_colunas_pipe
+from .med_pivot import desagrupar_colunas_pipe, desagrupar_quando_atc_multiplo
 from .med_normalize_dose import normalize_dose
 from .med_normalize_forma_farmaceutica import _normalizar_basico, normalizar_forma_farmaceutica_raw, criar_dim_forma_farmaceutica
 from .med_normalize_dose_freq import normalize_dose_freq
@@ -26,6 +26,11 @@ from .elt_meddra_match import (
 from .mappings import mapping_column_from_df, apply_mappings, mapping_column
 #from .via_adm import normalizar_via_administracao
 from .scd2 import apply_scd2, apply_scd2_from_file
+from .table_versioning import (
+    stamp_snapshot_version,
+    publish_snapshot_version,
+    load_current_version,
+)
 
 #### Notificacoes
 from .not_normalize_duracao import normalize_duracao

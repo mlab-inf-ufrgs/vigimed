@@ -43,9 +43,10 @@ Para cada coluna mapeada, são criadas `<COL>_VALOR` (texto upper) e `<COL>_CHAV
 - `DETENTOR_REGISTRO`, `FORMA_FARMACEUTICA`: `fuzzy_merge` com dimensões pré-calculadas, gera `<COL>_CHAVE` e `<COL>_SCORE`; chaves faltantes preenchidas com 0.
 - `INDICACAO_MEDDRA` e `INDICACAO_RELATADA_NOTIFICADOR_INICIAL`: fuzzy merge com `dim_soc_llt` (MedDRA LLT), produzindo `PK_LLT_*` e scores.
 - `PROBLEMAS_ADICIONAIS_RELCIONADOS_MEDICAMENTO`: `expandir_lista_wide` cria dummies `PROB_ADIC_*` para cada ocorrência.
-- `CODIGO_ATC`: renomeado para `ATC_CODE_LEVEL_4` e desagregado quando há múltiplos valores (`desagrupar_colunas_pipe`), gerando `hist_silver_dedup`.
-- `ATC_LEVEL_5` / `ATC_CODE_LEVEL_5`: inferidos em gold via `add_atc_level_5(fat, dim_atc)` — match do princípio ativo WHO-Drug (PT/EN) aos nomes de nível 5 da `dim_atc` no mesmo `ATC_CODE_LEVEL_4`, com fallback por nome global; sem match → missing (`null`).
-- Hashes adicionais: `HASH_SILVER` e, ao final, `HASH_GOLD` com colunas selecionadas.
+- `CODIGO_ATC`: renomeado para `ATC_CODE_LEVEL_4`. Desagregação via `desagrupar_quando_atc_multiplo`: com múltiplos ATCs, zip nome/princípios **só** se tiverem o mesmo nº de partes; senão explode **apenas** o ATC (repete o texto completo de nome/princípios). Com 1 ATC, a linha permanece.
+- `ATC_LEVEL_5` / `ATC_CODE_LEVEL_5`: inferidos na **silver** via `add_atc_level_5(hist_silver_dedup, dim_atc)` — match do princípio ativo WHO-Drug (PT/EN) aos nomes de nível 5 da `dim_atc`; sem match → missing (`null`).
+- Versionamento de snapshot: `VERSION_ID` + `CURRENT_FLAG` + `DATE_UPDATE` (`publish_snapshot_version`). Na próxima carga, `VERSION_ID = None` autoincrementa (`max+1`). A **gold** só lê a versão atual (`load_current_version`).
+- Hashes: `HASH_SILVER` / `HASH_GOLD` (excluem colunas de controle e `ATC_LEVEL_5_SCORE`).
 
 ### Colunas finais (gold)
 - Seleção e renomeações aplicadas sobre `hist_silver_dedup`, incluindo:

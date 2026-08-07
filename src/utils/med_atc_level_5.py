@@ -50,6 +50,21 @@ _SALT_NOISE = re.compile(
     flags=re.IGNORECASE,
 )
 
+# Sinônimos / expansões PT↔EN frequentes no VigiMed × WHO-ATC (após normalize).
+_PHRASE_SYNONYMS: tuple[tuple[str, str], ...] = (
+    ("BUTILBROMETO DE ESCOPOLAMINA", "BUTYLSCOPOLAMINE"),
+    ("BUTILBROMETO ESCOPOLAMINA", "BUTYLSCOPOLAMINE"),
+    ("BROMETO DE N BUTIL ESCOPOLAMONIO", "BUTYLSCOPOLAMINE"),
+)
+
+_TOKEN_ALIASES: dict[str, tuple[str, ...]] = {
+    "DIPIRONA": ("METAMIZOLE", "METAMIZOLE SODIUM"),
+    "METAMIZOLE": ("METAMIZOLE SODIUM",),
+    "BUTYLSCOPOLAMINE": ("SCOPOLAMINE", "BUTYLSCOPOLAMINE AND ANALGESICS"),
+    "ESCOPOLAMINA": ("SCOPOLAMINE", "BUTYLSCOPOLAMINE"),
+    "SCOPOLAMINE": ("BUTYLSCOPOLAMINE",),
+}
+
 
 def _strip_accents(text: str) -> str:
     decomposed = unicodedata.normalize("NFKD", text)
@@ -67,6 +82,10 @@ def normalize_drug_name(value: Any) -> str:
     text = re.sub(r"[^A-Z0-9 ]+", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
 
+    for src, dst in _PHRASE_SYNONYMS:
+        if src in text:
+            text = text.replace(src, dst)
+
     tokens: list[str] = []
     for token in text.split():
         normalized = token
@@ -74,6 +93,13 @@ def normalize_drug_name(value: Any) -> str:
             if normalized.endswith(pt_end):
                 normalized = normalized[: -len(pt_end)] + en_end
                 break
+        # token-level synonym
+        if normalized in _TOKEN_ALIASES and len(_TOKEN_ALIASES[normalized]) >= 1:
+            # keep canonical first alias target when it's a simple rename
+            if normalized == "DIPIRONA":
+                normalized = "METAMIZOLE"
+            elif normalized == "ESCOPOLAMINA":
+                normalized = "SCOPOLAMINE"
         tokens.append(normalized)
     return " ".join(tokens)
 
@@ -82,9 +108,21 @@ def _split_principio_tokens(value: Any) -> list[str]:
     if value is None or (isinstance(value, float) and pd.isna(value)):
         return []
     raw = str(value)
-    parts = re.split(r"\||_X000D_", raw)
-    tokens = [normalize_drug_name(part) for part in parts]
-    tokens = [t for t in tokens if t]
+    parts = re.split(r"\||_X000D_", raw, flags=re.IGNORECASE)
+    tokens: list[str] = []
+    for part in parts:
+        base = normalize_drug_name(part)
+        if not base:
+            continue
+        tokens.append(base)
+        # Aliases extras para match na dim_atc (ex.: dipirona→metamizole sodium)
+        for tok in base.split():
+            for alias in _TOKEN_ALIASES.get(tok, ()):
+                if alias not in tokens:
+                    tokens.append(alias)
+        for alias in _TOKEN_ALIASES.get(base, ()):
+            if alias not in tokens:
+                tokens.append(alias)
     if tokens:
         return tokens
     whole = normalize_drug_name(raw)

@@ -86,6 +86,9 @@ Este dataset contém notificações de eventos adversos (ICSRs) do VigiMed, o si
 | ATC_CODE_LEVEL_5 | string | Inferred ATC level-5 code (via `dim_atc` + substance match) | Código ATC nível 5 inferido (`dim_atc` + princípio ativo) |
 | ATC_LEVEL_5 | string | Label `{code}_{name}` (PT/EN match); missing if unmatched | Rótulo `{código}_{nome}` (match PT/EN); missing se sem match |
 | ATC_LEVEL_5_SCORE | float | Match confidence 0–100 | Confiança do match 0–100 |
+| VERSION_ID | integer/string | Snapshot version of the silver/gold build | Versão do snapshot silver/gold |
+| CURRENT_FLAG | boolean | True for the current published version | True na versão publicada atual |
+| DATE_UPDATE | string | Version publish date (ISO) | Data de publicação da versão |
 | DETENTOR_REGISTRO | string | Marketing authorization holder (raw/matched text) | Detentor do registro (texto) |
 | DETENTOR_REGISTRO_SCORE | float | Fuzzy match score | Score do match fuzzy |
 | DETENTOR_REGISTRO_CHAVE | integer | Holder key (FK → `dim_detentor_registro`) | Chave do detentor (FK) |

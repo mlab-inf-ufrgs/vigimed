@@ -247,3 +247,90 @@ def desagrupar_colunas_pipe(
     df_desagrupado = df_desagrupado.reset_index(drop=True)
     
     return df_desagrupado
+
+
+def _contar_partes_pipe(valor) -> int:
+    """Conta valores não vazios após normalizar separadores pipe / X000D."""
+    if valor is None or (isinstance(valor, float) and pd.isna(valor)):
+        return 0
+    normalizado = _normalizar_separadores(str(valor))
+    if not normalizado or not normalizado.strip():
+        return 0
+    return len([p for p in normalizado.split("|") if p.strip()])
+
+
+def desagrupar_quando_atc_multiplo(
+    df: pd.DataFrame,
+    *,
+    atc_col: str = "ATC_CODE_LEVEL_4",
+    colunas_alinhadas: Union[List[str], None] = None,
+    manter_linhas_vazias: bool = False,
+) -> pd.DataFrame:
+    """Desagrupa códigos ATC múltiplos; alinha nome/princípios só quando o zip é válido.
+
+    - 1 ATC (ex.: Buscopan + 2 APIs + ``A03DB``): mantém a linha.
+    - N ATCs **e** cada coluna alinhada tem **o mesmo** nº de partes: zip
+      ATC + princípios + nome (ex.: 2 ATCs e 2 APIs).
+    - N ATCs com contagens diferentes (ex.: 3 ATCs e 2 APIs): explode **só**
+      o ATC e **repete** nome/princípios completos em cada linha — evita
+      parear Dipirona com ATC errado por padding do último valor.
+    """
+    if df.empty:
+        return df.copy()
+    if atc_col not in df.columns:
+        raise KeyError(f"Coluna ATC ausente: {atc_col}")
+
+    if colunas_alinhadas is None:
+        colunas_alinhadas = [
+            "PRINCIPIOS_ATIVOS_WHODRUG",
+            "NOME_MEDICAMENTO_WHODRUG",
+        ]
+
+    work = df.copy()
+    n_atc = work[atc_col].map(_contar_partes_pipe)
+    multi_mask = n_atc > 1
+
+    partes: List[pd.DataFrame] = []
+    if (~multi_mask).any():
+        partes.append(work.loc[~multi_mask].copy())
+
+    if multi_mask.any():
+        multi = work.loc[multi_mask].copy()
+        aligned = [c for c in colunas_alinhadas if c in multi.columns]
+
+        def _zip_valido(row: pd.Series) -> bool:
+            n = _contar_partes_pipe(row[atc_col])
+            if n <= 1:
+                return False
+            for col in aligned:
+                if _contar_partes_pipe(row[col]) != n:
+                    return False
+            return True
+
+        if aligned:
+            zip_mask = multi.apply(_zip_valido, axis=1)
+        else:
+            zip_mask = pd.Series(False, index=multi.index)
+
+        if zip_mask.any():
+            partes.append(
+                desagrupar_colunas_pipe(
+                    multi.loc[zip_mask].copy(),
+                    [atc_col] + aligned,
+                    manter_linhas_vazias=manter_linhas_vazias,
+                )
+            )
+        if (~zip_mask).any():
+            # Contagens divergentes: só ATC (nome/princípios seguem iguais em cada linha)
+            partes.append(
+                desagrupar_colunas_pipe(
+                    multi.loc[~zip_mask].copy(),
+                    [atc_col],
+                    manter_linhas_vazias=manter_linhas_vazias,
+                )
+            )
+
+    if not partes:
+        return work.reset_index(drop=True)
+
+    return pd.concat(partes, ignore_index=True)
