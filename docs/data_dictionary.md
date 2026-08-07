@@ -86,6 +86,8 @@ Este dataset contém notificações de eventos adversos (ICSRs) do VigiMed, o si
 | ATC_CODE_LEVEL_5 | string | Inferred ATC level-5 code (via `dim_atc` + substance match) | Código ATC nível 5 inferido (`dim_atc` + princípio ativo) |
 | ATC_LEVEL_5 | string | Label `{code}_{name}` (PT/EN match); missing if unmatched | Rótulo `{código}_{nome}` (match PT/EN); missing se sem match |
 | ATC_LEVEL_5_SCORE | float | Match confidence 0–100 | Confiança do match 0–100 |
+| TIPO_PRODUTO | string | Product type: `VACINA` or `MEDICAMENTO` (from bronze ATC `J07*` and/or WHO-Drug text VACINA/VACCINE; no join to notifications) | Tipo do produto: `VACINA` ou `MEDICAMENTO` (ATC `J07*` e/ou texto WHO-Drug VACINA/VACCINE; sem join com notificações) |
+| VACINA_FLAG | integer | 1 if vaccine, 0 otherwise | 1 se vacina, 0 caso contrário |
 | VERSION_ID | integer/string | Snapshot version of the silver/gold build | Versão do snapshot silver/gold |
 | CURRENT_FLAG | boolean | True for the current published version | True na versão publicada atual |
 | DATE_UPDATE | string | Version publish date (ISO) | Data de publicação da versão |

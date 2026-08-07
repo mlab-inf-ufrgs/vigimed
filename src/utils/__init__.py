@@ -12,7 +12,15 @@ from .med_normalize_concentracao import normalize_concentracao
 from .med_normalize_duracao import normalize_duracao
 from .med_normalize_atc import normalize_atc
 from .med_atc_hierarchy import extract_atc_levels, build_dim_atc, expand_atc_hierarchy_from_codes
-from .med_atc_level_5 import add_atc_level_5, normalize_drug_name
+from .med_atc_level_5 import (
+    add_atc_level_5,
+    normalize_drug_name,
+    summarize_atc_level_5_quality,
+)
+from .med_tipo_produto import (
+    add_tipo_produto,
+    summarize_tipo_produto,
+)
 from .med_problemas_relacionados_uso import expandir_lista_wide
 #from .med_normalize_detentor import fuzzy_merge_detentor
 from .elt_fuzzy_merge import fuzzy_merge, hungarian_text_link

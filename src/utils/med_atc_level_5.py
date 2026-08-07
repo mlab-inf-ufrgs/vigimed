@@ -39,30 +39,138 @@ _PT_TO_EN_ENDINGS: tuple[tuple[str, str], ...] = (
     ("NIBIE", "NIB"),
 )
 
-_SALT_NOISE = re.compile(
+# Prefixo PT / biosimilar (não incluir SODIUM/POTASSIUM soltos — quebram
+# "SODIUM CHLORIDE" / "POTASSIUM CHLORIDE").
+_SALT_PREFIX = re.compile(
     r"\b("
     r"BIOSIMILAR(\s+\d+)?|"
-    r"CITRATE|ASPARTATE|HYDROCHLORIDE|SULFATE|SULPHATE|SODIUM|POTASSIUM|"
-    r"FUMARATE|MALEATE|MESYLATE|SUCCINATE|ACETATE|"
-    r"CITRATO\s+DE|CLORETO\s+DE|SULFATO\s+DE|CLORIDRATO\s+DE|"
+    r"CITRATO\s+DE|CLORETO\s+DE|SULFATO\s+DE|CLORIDRATO\s+DE|SUCCINATO\s+DE|"
     r"ACIDO\s+DE"
     r")\b",
     flags=re.IGNORECASE,
 )
+# Sal / ânion no final do nome EN (ex.: DICLOFENAC SODIUM → DICLOFENAC).
+_TRAILING_SALT = re.compile(
+    r"\s+("
+    r"SODIUM|POTASSIUM|MAGNESIUM|CALCIUM|"
+    r"CITRATE|ASPARTATE|HYDROCHLORIDE|SULFATE|SULPHATE|"
+    r"FUMARATE|MALEATE|MESYLATE|SUCCINATE|ACETATE|"
+    r"BESILATE|BESYLATE|PHOSPHATE|CARBONATE|SESQUIHYDRATE|TRIHYDRATE|MESILATE|MESYLATE"
+    r")$",
+    flags=re.IGNORECASE,
+)
+# Formas de sal em PT no meio/fim (ex.: CEFAZOLINA SODICA).
+_PT_SALT_FORM = re.compile(
+    r"\b(SODICA|SODICO|POTASSICA|POTASSICO|MAGNESIO|CALCICA|CALCICO)\b",
+    flags=re.IGNORECASE,
+)
 
-# Sinônimos / expansões PT↔EN frequentes no VigiMed × WHO-ATC (após normalize).
+# Frases PT / nomes comerciais / vacinas → texto alinhado à dim_atc (após upper/sem acento).
 _PHRASE_SYNONYMS: tuple[tuple[str, str], ...] = (
     ("BUTILBROMETO DE ESCOPOLAMINA", "BUTYLSCOPOLAMINE"),
     ("BUTILBROMETO ESCOPOLAMINA", "BUTYLSCOPOLAMINE"),
     ("BROMETO DE N BUTIL ESCOPOLAMONIO", "BUTYLSCOPOLAMINE"),
+    ("ACIDO ACETILSALICILICO", "ACETYLSALICYLIC ACID"),
+    ("CLORETO DE SODIO", "SODIUM CHLORIDE"),
+    ("CLORETO DE POTASSIO", "POTASSIUM CHLORIDE"),
+    ("SULFATO DE MORFINA", "MORPHINE"),
+    ("LOSARTANA POTASSICA", "LOSARTAN"),
+    ("PIPERACILINA SODICA", "PIPERACILLIN"),
+    ("TAZOBACTAM SODICO", "TAZOBACTAM"),
+    ("PIPERACILINA", "PIPERACILLIN"),
+    ("METAMIZOL DE MAGNESIO", "METAMIZOLE SODIUM"),
+    ("FOLINATO DE CALCIO", "CALCIUM FOLINATE"),
+    ("BESILATO DE ANLODIPINO", "AMLODIPINE"),
+    ("IMUNOGLOBULINA HUMANA", "IMMUNOGLOBULINS NORMAL HUMAN FOR INTRAVASCULAR ADM"),
+    ("IMMUNOGLOBULIN HUMAN NORMAL", "IMMUNOGLOBULINS NORMAL HUMAN FOR INTRAVASCULAR ADM"),
+    ("FOSFATO DE DEXAMETASONA", "DEXAMETHASONE"),
+    ("SIMETICONE", "SILICONES"),
+    ("SIMETICONA", "SILICONES"),
+    # Vacinas COVID (INN / descrições VigiMed → nomes ATC J07BN*)
+    ("TOZINAMERAN", "COVID 19 RNA BASED VACCINE"),
+    ("ELASOMERAN", "COVID 19 RNA BASED VACCINE"),
+    ("COVID 19 VACCINE NRVV AD CHADOX1 NCOV 19", "COVID 19 VIRAL VECTOR NON REPLICATING"),
+    ("COVID 19 VACCINE NRVV AD26 JNJ 78436735", "COVID 19 VIRAL VECTOR NON REPLICATING"),
+    ("COVID 19 VACCINE INACT VERO CZ02", "COVID 19 INACTIVATED VIRUS"),
+    ("COVID 19 VACCINE INACT VERO", "COVID 19 INACTIVATED VIRUS"),
+    ("VACINA COVID 19 INATIVADA VERO CZ02", "COVID 19 INACTIVATED VIRUS"),
+    ("VACINA COVID 19 INATIVADA VERO", "COVID 19 INACTIVATED VIRUS"),
+    ("HYOSCINE BUTYLBROMIDE", "BUTYLSCOPOLAMINE"),
 )
+
+# Token PT / variante → forma canônica EN usada na dim_atc.
+_TOKEN_CANONICAL: dict[str, str] = {
+    "DIPIRONA": "METAMIZOLE",
+    "METAMIZOL": "METAMIZOLE",
+    "ESCOPOLAMINA": "SCOPOLAMINE",
+    "CETOPROFENO": "KETOPROFEN",
+    "DOCETAXOL": "DOCETAXEL",
+    "FENTANILA": "FENTANYL",
+    "MORFINA": "MORPHINE",
+    "LOSARTANA": "LOSARTAN",
+    "DIFENIDRAMINA": "DIPHENHYDRAMINE",
+    "CICLOFOSFAMIDA": "CYCLOPHOSPHAMIDE",
+    "VANCOMICINA": "VANCOMYCIN",
+    "RIBOCICLIBE": "RIBOCICLIB",
+    "ONDANSETRONA": "ONDANSETRON",
+    "DEXAMETASONA": "DEXAMETHASONE",
+    "PREDNISONA": "PREDNISONE",
+    "HEPARINA": "HEPARIN",
+    "ENOXAPARINA": "ENOXAPARIN",
+    "TRAMADOL": "TRAMADOL",
+    "GABAPENTINA": "GABAPENTIN",
+    "CLONAZEPAM": "CLONAZEPAM",
+    "MIDAZOLAM": "MIDAZOLAM",
+    "PROPOFOL": "PROPOFOL",
+    "CEFTRIAXONA": "CEFTRIAXONE",
+    "CEFAZOLINA": "CEFAZOLIN",
+    "AMOXICILINA": "AMOXICILLIN",
+    "AZITROMICINA": "AZITHROMYCIN",
+    "MEROPENEM": "MEROPENEM",
+    "OMEPRAZOL": "OMEPRAZOLE",
+    "PANTOPRAZOL": "PANTOPRAZOLE",
+    "METFORMINA": "METFORMIN",
+    "PARACETAMOL": "PARACETAMOL",
+    "LEVOTIROXINA": "LEVOTHYROXINE",
+    "SINVASTATINA": "SIMVASTATIN",
+    "ANLODIPINO": "AMLODIPINE",
+    "AMLODIPINO": "AMLODIPINE",
+    "LENALIDOMIDA": "LENALIDOMIDE",
+    "SIMETICONE": "DIMETICONE",
+    "SIMETICONA": "DIMETICONE",
+    "SEMAGLUTIDA": "SEMAGLUTIDE",
+    "VARFARINA": "WARFARIN",
+    "MESSALAZINA": "MESALAZINE",
+    "MESALAZINA": "MESALAZINE",
+    "FENITOINA": "PHENYTOIN",
+    "OCITOCINA": "OXYTOCIN",
+}
 
 _TOKEN_ALIASES: dict[str, tuple[str, ...]] = {
     "DIPIRONA": ("METAMIZOLE", "METAMIZOLE SODIUM"),
     "METAMIZOLE": ("METAMIZOLE SODIUM",),
+    "LEVOTHYROXINE": ("LEVOTHYROXINE SODIUM",),
+    "AMLODIPINE": ("AMLODIPINE",),
+    "CALCIUM FOLINATE": ("CALCIUM FOLINATE",),
+    "IMMUNOGLOBULINS NORMAL HUMAN FOR INTRAVASCULAR ADM": (
+        "IMMUNOGLOBULINS NORMAL HUMAN FOR INTRAVASCULAR ADM",
+        "IMMUNOGLOBULINS NORMAL HUMAN FOR EXTRAVASCULAR ADM",
+    ),
+    "LENALIDOMIDE": ("LENALIDOMIDE",),
+    "DIMETICONE": ("DIMETICONE",),
     "BUTYLSCOPOLAMINE": ("SCOPOLAMINE", "BUTYLSCOPOLAMINE AND ANALGESICS"),
     "ESCOPOLAMINA": ("SCOPOLAMINE", "BUTYLSCOPOLAMINE"),
     "SCOPOLAMINE": ("BUTYLSCOPOLAMINE",),
+    "COVID 19 RNA BASED VACCINE": ("COVID 19 RNA BASED VACCINE",),
+    "COVID 19 VIRAL VECTOR NON REPLICATING": ("COVID 19 VIRAL VECTOR NON REPLICATING",),
+    "COVID 19 INACTIVATED VIRUS": ("COVID 19 INACTIVATED VIRUS",),
+    "INSULIN NOS": ("INSULIN HUMAN", "INSULIN"),
+    "INSULIN": ("INSULIN HUMAN",),
+    "ACETYLSALICYLIC ACID": ("ACETYLSALICYLIC ACID",),
+    "PIPERACILLIN": ("PIPERACILLIN AND BETA LACTAMASE INHIBITOR", "PIPERACILLIN"),
+    "KETOPROFEN": ("KETOPROFEN",),
+    "DOCETAXEL": ("DOCETAXEL",),
+    "RIBOCICLIB": ("RIBOCICLIB",),
 }
 
 
@@ -78,13 +186,26 @@ def normalize_drug_name(value: Any) -> str:
     text = _strip_accents(str(value)).upper()
     text = re.sub(r"_X000[DA9]_", " ", text)
     text = text.replace("|", " ")
-    text = _SALT_NOISE.sub(" ", text)
     text = re.sub(r"[^A-Z0-9 ]+", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
 
-    for src, dst in _PHRASE_SYNONYMS:
+    # Frases longas antes de remover sais (ex.: CLORETO DE SODIO → SODIUM CHLORIDE).
+    for src, dst in sorted(_PHRASE_SYNONYMS, key=lambda x: len(x[0]), reverse=True):
         if src in text:
             text = text.replace(src, dst)
+
+    text = _SALT_PREFIX.sub(" ", text)
+    text = _PT_SALT_FORM.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    # Não cortar sais quando o nome inteiro é o eletrólito (B05XA*).
+    if text not in {"SODIUM CHLORIDE", "POTASSIUM CHLORIDE"}:
+        # Pode haver vários sufixos (ex.: PANTOPRAZOLE SODIUM SESQUIHYDRATE).
+        for _ in range(4):
+            nxt = _TRAILING_SALT.sub("", text)
+            nxt = re.sub(r"\s+", " ", nxt).strip()
+            if nxt == text:
+                break
+            text = nxt
 
     tokens: list[str] = []
     for token in text.split():
@@ -93,13 +214,7 @@ def normalize_drug_name(value: Any) -> str:
             if normalized.endswith(pt_end):
                 normalized = normalized[: -len(pt_end)] + en_end
                 break
-        # token-level synonym
-        if normalized in _TOKEN_ALIASES and len(_TOKEN_ALIASES[normalized]) >= 1:
-            # keep canonical first alias target when it's a simple rename
-            if normalized == "DIPIRONA":
-                normalized = "METAMIZOLE"
-            elif normalized == "ESCOPOLAMINA":
-                normalized = "SCOPOLAMINE"
+        normalized = _TOKEN_CANONICAL.get(normalized, normalized)
         tokens.append(normalized)
     return " ".join(tokens)
 
@@ -313,9 +428,47 @@ def add_atc_level_5(
     return target
 
 
+def summarize_atc_level_5_quality(
+    df: pd.DataFrame,
+    *,
+    out_col: str = "ATC_LEVEL_5",
+    score_out_col: str = "ATC_LEVEL_5_SCORE",
+    default: Optional[str] = ATC_LEVEL_5_DEFAULT,
+) -> dict:
+    """Resumo de cobertura e scores de ``ATC_LEVEL_5`` (para QA no notebook)."""
+    if out_col not in df.columns:
+        raise KeyError(f"Coluna ausente: {out_col}")
+    n = len(df)
+    filled_mask = df[out_col].notna() & (df[out_col].astype(str) != str(default))
+    n_filled = int(filled_mask.sum())
+    n_missing = n - n_filled
+    scores = df.loc[filled_mask, score_out_col].astype(float) if score_out_col in df.columns else pd.Series(dtype=float)
+    summary = {
+        "n_rows": n,
+        "n_filled": n_filled,
+        "n_missing": n_missing,
+        "pct_filled": round(100.0 * n_filled / n, 2) if n else 0.0,
+        "pct_missing": round(100.0 * n_missing / n, 2) if n else 0.0,
+    }
+    if len(scores):
+        summary.update(
+            {
+                "score_mean": round(float(scores.mean()), 2),
+                "score_p10": round(float(scores.quantile(0.10)), 2),
+                "score_p50": round(float(scores.quantile(0.50)), 2),
+                "score_p90": round(float(scores.quantile(0.90)), 2),
+                "score_p99": round(float(scores.quantile(0.99)), 2),
+                "score_min": round(float(scores.min()), 2),
+                "pct_score_100": round(100.0 * (scores >= 99.999).mean(), 2),
+            }
+        )
+    return summary
+
+
 # Compat: chamadas antigas sem dim_atc não são mais válidas.
 def map_atc_level_5(*_args, **_kwargs):
     raise TypeError(
         "map_atc_level_5 legado (regras fixas) foi substituído. "
         "Use add_atc_level_5(df, dim_atc) / match_atc_level_5_row."
     )
+

@@ -45,12 +45,13 @@ Para cada coluna mapeada, são criadas `<COL>_VALOR` (texto upper) e `<COL>_CHAV
 - `PROBLEMAS_ADICIONAIS_RELCIONADOS_MEDICAMENTO`: `expandir_lista_wide` cria dummies `PROB_ADIC_*` para cada ocorrência.
 - `CODIGO_ATC`: renomeado para `ATC_CODE_LEVEL_4`. Desagregação via `desagrupar_quando_atc_multiplo`: com múltiplos ATCs, zip nome/princípios **só** se tiverem o mesmo nº de partes; senão explode **apenas** o ATC (repete o texto completo de nome/princípios). Com 1 ATC, a linha permanece.
 - `ATC_LEVEL_5` / `ATC_CODE_LEVEL_5`: inferidos na **silver** via `add_atc_level_5(hist_silver_dedup, dim_atc)` — match do princípio ativo WHO-Drug (PT/EN) aos nomes de nível 5 da `dim_atc`; sem match → missing (`null`).
+- `TIPO_PRODUTO` / `VACINA_FLAG`: classificados na **silver** via `add_tipo_produto` — `VACINA` se ATC nível 4 começa com `J07` **ou** nome/princípio WHO-Drug contém `VACINA`/`VACCINE`; caso contrário `MEDICAMENTO`. Não usa join com notificações (`TIPO_ENTRADA_VIGIMED` é canal, não tipo de produto).
 - Versionamento de snapshot: `VERSION_ID` + `CURRENT_FLAG` + `DATE_UPDATE` (`publish_snapshot_version`). Na próxima carga, `VERSION_ID = None` autoincrementa (`max+1`). A **gold** só lê a versão atual (`load_current_version`).
-- Hashes: `HASH_SILVER` / `HASH_GOLD` (excluem colunas de controle e `ATC_LEVEL_5_SCORE`).
+- Hashes: `HASH_SILVER` / `HASH_GOLD` excluem só colunas de controle (`ATUALIZADO`, hashes, `VERSION_ID`, `CURRENT_FLAG`, `DATE_UPDATE`). Conteúdo analítico — inclusive `ATC_LEVEL_5_SCORE`, `TIPO_PRODUTO` e `VACINA_FLAG` — entra no hash.
 
 ### Colunas finais (gold)
 - Seleção e renomeações aplicadas sobre `hist_silver_dedup`, incluindo:
-  - Identificadores e textos principais (`IDENTIFICACAO_NOTIFICACAO`, `NOME_MEDICAMENTO_WHODRUG`, `PRINCIPIOS_ATIVOS_WHODRUG`, `ATC_CODE_LEVEL_4`, `ATC_CODE_LEVEL_5`, `ATC_LEVEL_5`).
+  - Identificadores e textos principais (`IDENTIFICACAO_NOTIFICACAO`, `NOME_MEDICAMENTO_WHODRUG`, `PRINCIPIOS_ATIVOS_WHODRUG`, `ATC_CODE_LEVEL_4`, `ATC_CODE_LEVEL_5`, `ATC_LEVEL_5`, `TIPO_PRODUTO`, `VACINA_FLAG`).
   - Chaves/scores fuzzy (`DETENTOR_REGISTRO_CHAVE`, `DETENTOR_REGISTRO_SCORE`, `FORMA_FARMACEUTICA_CHAVE`, `FORMA_FARMACEUTICA_SCORE`).
   - Medidas normalizadas (`CONCENTRACAO_*`, `DOSE_*`, `DURACAO_*`).
   - Via de administração (`VIA_ADMINISTRACAO[_MAE_PAI]` e chaves).
