@@ -1,0 +1,68 @@
+BASE DE DIPIRONA NO VIGIMED — ORIENTAÇÕES PARA O EXCEL
+
+Este pacote contém os arquivos preparados para o TCC de Farmácia.
+Não é necessário usar Python, SQL ou GitHub para analisar os dados.
+
+1. POR ONDE COMEÇAR
+
+Abra fat_analytical_dipirona_2019_2025.csv no Excel. Se tudo aparecer em
+uma única coluna, use Dados > De Texto/CSV, escolha UTF-8 e o delimitador
+ponto e vírgula (;). Os arquivos são CSVs compatíveis com Excel.
+Depois da importação, você pode salvar sua própria cópia como .xlsx.
+
+Consulte dicionario_dados.csv para entender cada coluna.
+Os três arquivos resumo_*.csv trazem totais descritivos prontos para consulta.
+
+2. O QUE CADA LINHA REPRESENTA
+
+Cada linha combina uma notificação, uma composição de medicamento suspeito
+e um registro de reação. Uma notificação com duas reações aparece em duas
+linhas. Portanto, contar linhas não informa o total de notificações.
+
+Para contar notificações, conte valores distintos de id_notificacao.
+Para contar registros de reação, conte valores distintos de id_reacao,
+excluindo os vazios. Não some n_reacoes_fonte na base principal.
+
+Ao criar uma tabela dinâmica, marque Adicionar estes dados ao Modelo de
+Dados para disponibilizar Contagem Distinta. Caso sua versão do Excel não
+ofereça essa opção, use os resumos fornecidos ou peça ajuda para montar
+a contagem. A opção Contagem comum conta linhas e pode superestimar o total.
+
+3. GRUPOS DE MEDICAMENTOS
+
+grupo_medicamento contém as categorias para as tabelas do TCC.
+associacao_detalhada preserva a composição específica de cada associação.
+Na execução de referência, associações com menos de 50 notificações
+distintas foram reunidas em Outras associações. Dipirona isolada ficou
+separada. Esse limite pode ser revisto com a orientadora e a base regenerada.
+
+Uma notificação pode envolver mais de uma composição suspeita. Por isso,
+somar as notificações dos grupos pode superar o total geral.
+
+Somente medicamentos classificados como SUSPEITO foram incluídos.
+Dipirona registrada apenas como CONCOMITANTE não foi incluída.
+
+4. PERÍODO E LIMITAÇÕES QUE PRECISAM CONSTAR NO TCC
+
+O filtro considera DATA_NOTIFICACAO entre 01/01/2019 e 31/12/2025.
+Quando essa data está ausente, a notificação é excluída do recorte principal.
+Ela não foi substituída pela data de inclusão no sistema. Essa escolha
+precisa estar alinhada à metodologia aprovada com a orientadora.
+
+A extração disponível não comprova cobertura completa de dezembro de 2025.
+Os desfechos e a gravidade são os informados na reação. As notificações
+registram suspeitas e não comprovam que o medicamento causou o evento.
+Um campo vazio significa informação ausente, e não necessariamente Não.
+
+Os registros de reação indistinguíveis foram agrupados, mantendo a
+multiplicidade para auditoria. Os totais descrevem registros de reação
+agrupados; não confirmam quantos episódios clínicos diferentes ocorreram.
+
+5. RASTREABILIDADE
+
+O arquivo manifesto.json registra os parâmetros e os hashes dos arquivos
+utilizados. Ele permite identificar a versão exata da base entregue.
+
+O código, os testes e a metodologia ficam no repositório VigiMed,
+no diretório ad-hoc-analysis/dipirona. Não é necessário executá-los para
+trabalhar com os arquivos deste pacote.

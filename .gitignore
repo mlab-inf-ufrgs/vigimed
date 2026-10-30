@@ -6,3 +6,9 @@ venv/
 data/03_gold/fat_analytical
 data/01_bronze/atc
 data/01_bronze/meddra
+
+# Resultados locais e pacotes de entrega da análise ad hoc de dipirona
+/eda/dipirona/output/
+/ad-hoc-analysis/dipirona/output/
+/ad-hoc-analysis/dipirona/entrega/
+/ad-hoc-analysis/**/__pycache__/

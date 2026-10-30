@@ -1,5 +1,7 @@
 # VigiMed
 
+**Análises ad hoc:** [índice de estudos](ad-hoc-analysis/README.md), incluindo a [base de dipirona para TCC de Farmácia](ad-hoc-analysis/dipirona/README.md), com código reproduzível e orientações de uso no Excel.
+
 Projeto para ingestão, processamento e análise dos dados do **VigiMed**, sistema de farmacovigilância da Agência Nacional de Vigilância Sanitária (Anvisa), enriquecidos com as terminologias **ATC** (OMS) e **MedDRA**.
 
 [🇺🇸 English](README.md) | **🇧🇷 Português**
