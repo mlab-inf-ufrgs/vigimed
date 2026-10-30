@@ -1,5 +1,7 @@
 # VigiMed
 
+**Ad hoc analyses:** [study index](ad-hoc-analysis/README.md), including the [dipyrone analysis for a Pharmacy undergraduate thesis](ad-hoc-analysis/dipirona/README.md), with reproducible code and Excel guidance in Portuguese.
+
 Project for ingesting, processing, and analyzing data from **VigiMed**, the Brazilian Health Regulatory Agency (ANVISA) pharmacovigilance system, enriched with the **ATC** (WHO) and **MedDRA** medical terminologies.
 
 🇺🇸 **English** | [🇧🇷 Português](README.pt-BR.md)

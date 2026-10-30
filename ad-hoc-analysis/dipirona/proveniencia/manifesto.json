@@ -1,0 +1,17 @@
+{
+  "data_referencia": "DATA_NOTIFICACAO",
+  "limiar_associacoes": 50,
+  "periodo": [
+    "2019-01-01",
+    "2025-12-31"
+  ],
+  "fontes": {
+    "dim_notificacoes": "0c553fe0f734c6b90e4163ac37ab4759818eca70995ab5fa43f36867f7a8fc63",
+    "fat_medicamentos": "f7412e6cb0269b7086f00c6a1bcde905aa0e39faa510a83990b3f126a43dd5a0",
+    "fat_reacoes": "2f2d0bb468cabacf5f8eb770ff0249510d881b6348a3ee596174a895e0b06548",
+    "dim_soc_llt": "7f1f84e15e0b4917d17ffcfaaa6a3c1f2ba88b70e5ac457e839eb0f9848df959",
+    "dim_atc": "d3c157d426bcdff308ff88ecac0fb3740d72aa7c6fd7c99e16aa2be2d5fdb3be"
+  },
+  "sha256_csv": "62bf98e2bee5421f558f92971f7ea97877649624deac9be4be05e178f6ef4dcd",
+  "sha256_implementacao": "9c7b45b40f92ebaf3930b7ee853fe8d2bbeb402475e70f315958fd43d7132548"
+}
